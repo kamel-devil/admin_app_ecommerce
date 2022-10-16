@@ -5,12 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
-import '../presentation/constant.dart';
+import '../../presentation/constant.dart';
 
-import '../provider/provider.dart';
-import '../res/cache_image_network.dart';
-import '../res/global_widget.dart';
-import 'home_admin.dart';
+import '../../provider/provider.dart';
+import '../../res/cache_image_network.dart';
+import '../../res/global_widget.dart';
+import 'edit_owner.dart';
+import '../home_admin.dart';
 
 class Owners extends StatefulWidget {
   const Owners({Key? key}) : super(key: key);
@@ -45,13 +46,6 @@ class _OwnersState extends State<Owners> {
 
     return Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            onPressed: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => homeAdmin()));
-            },
-            icon: Icon(Icons.arrow_back),
-          ),
           iconTheme: const IconThemeData(
             color: Colors.black, //change your color here
           ),
@@ -61,6 +55,7 @@ class _OwnersState extends State<Owners> {
             'Owner List',
             style: TextStyle(fontSize: 18, color: Colors.black),
           ),
+          centerTitle: true,
           backgroundColor: Colors.white,
           // create search text field in the app bar
           bottom: PreferredSize(
@@ -234,21 +229,22 @@ class _OwnersState extends State<Owners> {
                   // ),
                   RefreshIndicator(
                     onRefresh: refreshData,
-                    child: Container(
+                    child: SizedBox(
                       height: 700,
                       child: AnimatedList(
                           shrinkWrap: true,
                           key: _listKey,
                           initialItemCount: p.ownerData.length,
-                          physics: AlwaysScrollableScrollPhysics(),
+                          physics: const AlwaysScrollableScrollPhysics(),
                           itemBuilder: (context, index, animation) {
                             return _buildItem(boxImageSize, animation, index);
                           }),
                     ),
                   )
                 ]);
-              } else {
-                return CircularProgressIndicator();
+              }
+              else {
+                return const CircularProgressIndicator();
               }
             },
           ),
@@ -352,7 +348,11 @@ class _OwnersState extends State<Owners> {
                       Expanded(
                         child: OutlinedButton(
                             onPressed: () {
-                              Fluttertoast.showToast(msg: 'Item has been EDIT');
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => Editowner(
+                                    id:  p.ownerData[index]['id'],
+
+                                  )));
                             },
                             style: ButtonStyle(
                                 minimumSize: MaterialStateProperty.all(

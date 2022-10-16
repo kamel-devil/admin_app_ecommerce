@@ -5,12 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
-import '../presentation/constant.dart';
+import '../../presentation/constant.dart';
 
-import '../provider/provider.dart';
-import '../res/cache_image_network.dart';
-import '../res/global_widget.dart';
-import 'home_admin.dart';
+import '../../provider/provider.dart';
+import '../../res/cache_image_network.dart';
+import '../../res/global_widget.dart';
+import '../home_admin.dart';
 
 class Owner extends StatefulWidget {
   const Owner({Key? key}) : super(key: key);
@@ -50,7 +50,7 @@ class _OwnerState extends State<Owner> {
               Navigator.of(context)
                   .push(MaterialPageRoute(builder: (context) => homeAdmin()));
             },
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back),
           ),
           iconTheme: const IconThemeData(
             color: Colors.black, //change your color here
@@ -153,7 +153,7 @@ class _OwnerState extends State<Owner> {
                                 ),
                                 GestureDetector(
                                     onTap: () {},
-                                    child: const Icon(Icons.info_outline,
+                                    child: const Icon(Icons.edit,
                                         size: 20, color: BLACK77)),
                               ],
                             ),
@@ -191,9 +191,9 @@ class _OwnerState extends State<Owner> {
                                   Container(
                                     margin: const EdgeInsets.symmetric(
                                         horizontal: 16),
-                                    child: const Text(
-                                        'Steam Boat Lovers - Lefferts Avenue',
-                                        style: TextStyle(
+                                    child:  Text(
+                                        '${p.ownerEdit['f_name']}',
+                                        style: const TextStyle(
                                             fontWeight: FontWeight.bold),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis),
@@ -244,7 +244,7 @@ class _OwnerState extends State<Owner> {
                           shrinkWrap: true,
                           key: _listKey,
                           initialItemCount: p.ownerData.length,
-                          physics: AlwaysScrollableScrollPhysics(),
+                          physics: const AlwaysScrollableScrollPhysics(),
                           itemBuilder: (context, index, animation) {
                             return _buildItem(boxImageSize, animation, index);
                           }),
@@ -252,7 +252,7 @@ class _OwnerState extends State<Owner> {
                   )
                 ]);
               } else {
-                return CircularProgressIndicator();
+                return const CircularProgressIndicator();
               }
             },
           ),

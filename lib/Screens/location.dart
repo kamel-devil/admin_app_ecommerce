@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../classes/language.dart';
 import '../classes/language_constants.dart';
 import '../main.dart';
 import '../presentation/style_Button.dart';
+import '../provider/provider.dart';
 
 class screen_location extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+    var p = Provider.of<Funcprovider>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(

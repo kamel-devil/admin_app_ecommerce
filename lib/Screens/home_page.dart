@@ -20,6 +20,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text(translation(context).homePage),
@@ -69,6 +70,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Form _mainForm(BuildContext context) {
+
     return Form(
       key: _key,
       child: Column(

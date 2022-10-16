@@ -182,18 +182,52 @@ class _Signin2PageState extends State<Signin2Page> {
                                     onPressed: () {
                                       if (_formKey.currentState!.validate()) {
                                         _formKey.currentState?.save();
-                                        p.login(emailController.text.toString(),
-                                            passwordController.text.toString());
+                                        p
+                                            .login(
+                                                emailController.text.toString(),
+                                                passwordController.text
+                                                    .toString())
+                                            .then((value) {
+                                          if (value['reply']) {
+                                            p.saveUserData(value["image"]??'',value["token"]??'',value["f_name"]??'',value['l_name']??'');
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        homeAdmin()));
+                                            p.saveLogin(true);
+                                            p.saveToken(value['token']);
+
+                                          } else {
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                  title: const Text(
+                                                    'Error Login',
+                                                    style:
+                                                        TextStyle(fontSize: 18),
+                                                  ),
+                                                  content: const Text(
+                                                      'Are you sure Loogin ?',
+                                                      style: TextStyle(
+                                                          fontSize: 13,
+                                                          color: BLACK77)),
+                                                );
+                                              },
+                                            );
+                                          }
+                                        });
 
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(const SnackBar(
                                                 content:
                                                     Text('Form Submitted')));
                                       }
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  homeAdmin()));
                                     },
                                     child: const Padding(
                                       padding:

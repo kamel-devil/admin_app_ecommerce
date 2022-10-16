@@ -1,17 +1,9 @@
-import 'package:e_commerce/Screens/shops.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
-
-import '../map/tools/map.dart';
 import '../model/sales_model.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
-
 import '../profile/user1.dart';
-import '../provider/provider.dart';
 import '../res/global_widget.dart';
-import 'add_owner.dart';
-import 'owners.dart';
 
 class homeAdmin extends StatefulWidget {
   @override
@@ -60,7 +52,6 @@ class _homeAdminState extends State<homeAdmin> {
 
   @override
   Widget build(BuildContext context) {
-    var p = Provider.of<Funcprovider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -68,10 +59,10 @@ class _homeAdminState extends State<homeAdmin> {
         elevation: 0,
         centerTitle: true,
 
-        title: Text(
-          'Statistics'.tr,
+        title: const Text(
+          'Statistics',
           style:
-              const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+              TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
         ),
 
         // leading:
@@ -90,77 +81,77 @@ class _homeAdminState extends State<homeAdmin> {
           ),
         ],
       ),
-      drawer: Drawer(
-          // backgroundColor: Colors.black,
-          child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          const UserAccountsDrawerHeader(
-            accountName: Text("Ashish Rawat"),
-            accountEmail: Text("ashishrawat2911@gmail.com"),
-            currentAccountPicture: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Text("A", style: TextStyle(fontSize: 40.0)),
-            ),
-          ),
-          ListTile(
-            title: const Text('Shops'),
-            trailing: const Icon(Icons.arrow_forward),
-            onTap: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => Shops()));
-            },
-          ),
-          ListTile(
-            title: const Text('Add new shop'),
-            onTap: () {
-              showDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  builder: (_) {
-                    return Dialog(
-                      // The background color
-                      backgroundColor: Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            // The loading indicator
-                            CircularProgressIndicator(),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            // Some text
-                            Text('Loading...')
-                          ],
-                        ),
-                      ),
-                    );
-                  });
-
-              p.getCurrentLocation().whenComplete(() {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => const Map()));
-              });
-            },
-          ),
-          ListTile(
-            title: const Text('Owners'),
-            onTap: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const Owners()));
-            },
-          ),
-          ListTile(
-            title: const Text('Add new owner'),
-            onTap: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => AddOwner()));
-            },
-          ),
-        ],
-      )),
+      // drawer: Drawer(
+      //     // backgroundColor: Colors.black,
+      //     child: ListView(
+      //   padding: EdgeInsets.zero,
+      //   children: <Widget>[
+      //     const UserAccountsDrawerHeader(
+      //       accountName: Text("Ashish Rawat"),
+      //       accountEmail: Text("ashishrawat2911@gmail.com"),
+      //       currentAccountPicture: CircleAvatar(
+      //         backgroundColor: Colors.white,
+      //         child: Text("A", style: TextStyle(fontSize: 40.0)),
+      //       ),
+      //     ),
+      //     ListTile(
+      //       title: const Text('Shops'),
+      //       trailing: const Icon(Icons.arrow_forward),
+      //       onTap: () {
+      //         Navigator.of(context)
+      //             .push(MaterialPageRoute(builder: (context) =>  Shops()));
+      //       },
+      //     ),
+      //     ListTile(
+      //       title: const Text('Add new shop'),
+      //       onTap: () {
+      //         showDialog(
+      //             barrierDismissible: false,
+      //             context: context,
+      //             builder: (_) {
+      //               return Dialog(
+      //                 // The background color
+      //                 backgroundColor: Colors.white,
+      //                 child: Padding(
+      //                   padding: const EdgeInsets.symmetric(vertical: 20),
+      //                   child: Column(
+      //                     mainAxisSize: MainAxisSize.min,
+      //                     children: const [
+      //                       // The loading indicator
+      //                       CircularProgressIndicator(),
+      //                       SizedBox(
+      //                         height: 15,
+      //                       ),
+      //                       // Some text
+      //                       Text('Loading...')
+      //                     ],
+      //                   ),
+      //                 ),
+      //               );
+      //             });
+      //
+      //         p.getCurrentLocation().whenComplete(() {
+      //           Navigator.of(context)
+      //               .push(MaterialPageRoute(builder: (context) => const Map()));
+      //         });
+      //       },
+      //     ),
+      //     ListTile(
+      //       title: const Text('Owners'),
+      //       onTap: () {
+      //         Navigator.of(context).push(
+      //             MaterialPageRoute(builder: (context) => const Owners()));
+      //       },
+      //     ),
+      //     ListTile(
+      //       title: const Text('Add new owner'),
+      //       onTap: () {
+      //         Navigator.of(context)
+      //             .push(MaterialPageRoute(builder: (context) => AddOwner()));
+      //       },
+      //     ),
+      //   ],
+      // )),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
         child: Column(

@@ -1,15 +1,15 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:universal_io/io.dart' as IO;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../presentation/constant.dart';
-import '../provider/provider.dart';
-import 'add_shop.dart';
-import 'home_admin.dart';
+
+import '../../presentation/constant.dart';
+import '../../provider/provider.dart';
+import '../home_admin.dart';
 import 'owners.dart';
+
 
 class AddOwner extends StatefulWidget {
   @override
@@ -63,7 +63,6 @@ class _AddOwnerState extends State<AddOwner> {
   @override
   Widget build(BuildContext context) {
     var p = Provider.of<Funcprovider>(context);
-
     loadGenderList();
     // Build a Form widget using the _formKey we created above
     return Scaffold(
@@ -72,9 +71,9 @@ class _AddOwnerState extends State<AddOwner> {
           elevation: 0,
           centerTitle: true,
 
-          title: Text(
-            'Statistics'.tr,
-            style: const TextStyle(
+          title: const Text(
+            'Statistics',
+            style:  TextStyle(
                 fontWeight: FontWeight.bold, color: Colors.black),
           ),
 
@@ -94,47 +93,47 @@ class _AddOwnerState extends State<AddOwner> {
             ),
           ],
         ),
-        drawer: Drawer(
-            // backgroundColor: Colors.black,
-            child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            const UserAccountsDrawerHeader(
-              accountName: Text("Ashish Rawat"),
-              accountEmail: Text("ashishrawat2911@gmail.com"),
-              currentAccountPicture: CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Text("A", style: TextStyle(fontSize: 40.0)),
-              ),
-            ),
-            ListTile(
-              title: const Text('Shops'),
-              trailing: const Icon(Icons.arrow_forward),
-              onTap: () {},
-            ),
-            ListTile(
-              title: const Text('Add new shop'),
-              onTap: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => const AddShop()));
-              },
-            ),
-            ListTile(
-              title: const Text('Owners'),
-              onTap: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const Owners()));
-              },
-            ),
-            ListTile(
-              title: const Text('Add new owner'),
-              onTap: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => AddOwner()));
-              },
-            ),
-          ],
-        )),
+        // drawer: Drawer(
+        //     // backgroundColor: Colors.black,
+        //     child: ListView(
+        //   padding: EdgeInsets.zero,
+        //   children: <Widget>[
+        //     const UserAccountsDrawerHeader(
+        //       accountName: Text("Ashish Rawat"),
+        //       accountEmail: Text("ashishrawat2911@gmail.com"),
+        //       currentAccountPicture: CircleAvatar(
+        //         backgroundColor: Colors.white,
+        //         child: Text("A", style: TextStyle(fontSize: 40.0)),
+        //       ),
+        //     ),
+        //     ListTile(
+        //       title: const Text('Shops'),
+        //       trailing: const Icon(Icons.arrow_forward),
+        //       onTap: () {},
+        //     ),
+        //     ListTile(
+        //       title: const Text('Add new shop'),
+        //       onTap: () {
+        //         Navigator.of(context)
+        //             .push(MaterialPageRoute(builder: (context) => const AddShop()));
+        //       },
+        //     ),
+        //     ListTile(
+        //       title: const Text('Owners'),
+        //       onTap: () {
+        //         Navigator.of(context).push(
+        //             MaterialPageRoute(builder: (context) => const Owners()));
+        //       },
+        //     ),
+        //     ListTile(
+        //       title: const Text('Add new owner'),
+        //       onTap: () {
+        //         Navigator.of(context).push(
+        //             MaterialPageRoute(builder: (context) => AddOwner()));
+        //       },
+        //     ),
+        //   ],
+        // )),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.only(left: 16.0, right: 16, top: 16),
@@ -229,6 +228,7 @@ class _AddOwnerState extends State<AddOwner> {
                     },
                   ),
                   TextFormField(
+
                     decoration:
                     const InputDecoration(labelText: 'Enter Email', hintText: 'Email'),
                     keyboardType: TextInputType.emailAddress,
@@ -243,6 +243,7 @@ class _AddOwnerState extends State<AddOwner> {
                     },
                   ),
                   TextFormField(
+
                     decoration:
                     const InputDecoration(hintText: 'Phone', labelText: 'Enter Phone'),
                     keyboardType: TextInputType.number,
@@ -260,6 +261,7 @@ class _AddOwnerState extends State<AddOwner> {
                     },
                   ),
                   TextFormField(
+
                     decoration: const InputDecoration(
                         hintText: 'Admin@mail.com', labelText: 'User Name'),
                     keyboardType: TextInputType.text,
@@ -347,7 +349,10 @@ class _AddOwnerState extends State<AddOwner> {
                             'username':_username,
                             'phone':'$_phone',
                             'password':_password
-                          },p.file!);
+                          },p.selectedFile!).whenComplete(() => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Owners())));
 
                           ScaffoldMessenger.of(context)
                               .showSnackBar(const SnackBar(content: Text('Form Submitted')));
@@ -365,14 +370,14 @@ class _AddOwnerState extends State<AddOwner> {
   Widget _getImageWidget() {
     var p = Provider.of<Funcprovider>(context);
 
-    if (p.file != null) {
+    if (p.selectedFile != null) {
       return (kIsWeb)
           ? Image.network(
-        p.file!.path,
+        p.selectedFile!.path,
         width: (kIsWeb) ? 640 : MediaQuery.of(context).size.width-16,
         fit: BoxFit.fill,
       ) : Image.file(
-        p.file!,
+        p.selectedFile!,
         width: (kIsWeb) ? 640 : MediaQuery.of(context).size.width-16,
         fit: BoxFit.fill,
       );

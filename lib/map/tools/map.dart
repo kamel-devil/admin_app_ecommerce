@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:e_commerce/Screens/add_shop.dart';
+import 'package:e_commerce/Screens/Shops/add_shop.dart';
 import 'package:e_commerce/Screens/home_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -11,15 +11,14 @@ import 'package:provider/provider.dart';
 
 import '../../provider/provider.dart';
 
-
-class Map extends StatefulWidget {
-  const Map({Key? key}) : super(key: key);
+class Map1 extends StatefulWidget {
+  const Map1({Key? key}) : super(key: key);
 
   @override
-  State<Map> createState() => _MapState();
+  State<Map1> createState() => _Map1State();
 }
 
-class _MapState extends State<Map> {
+class _Map1State extends State<Map1> {
   final PopupController _popupController = PopupController();
   @override
   Widget build(BuildContext context) {
@@ -52,6 +51,10 @@ class _MapState extends State<Map> {
       body: Stack(children: [
         FlutterMap(
           options: MapOptions(
+            onPositionChanged: (position, M) {
+              pro.getAddressInfo(
+                  position.center!.latitude, position.center!.longitude);
+            },
             onPointerHover: (event, point) {
               pro.getAddressInfo(point.latitude, point.longitude);
               pro.change(point.latitude, point.longitude);
@@ -83,7 +86,12 @@ class _MapState extends State<Map> {
                 padding: EdgeInsets.all(50),
               ),
               markers: [
-              Marker(point: LatLng(pro.lat!,pro.long!), builder:(context)=> const Icon(Icons.location_on,size: 35,)),
+                Marker(
+                    point: LatLng(pro.lat!, pro.long!),
+                    builder: (context) => const Icon(
+                          Icons.location_on,
+                          size: 35,
+                        )),
               ],
               polygonOptions: const PolygonOptions(
                   borderColor: Colors.blueAccent,
@@ -94,18 +102,19 @@ class _MapState extends State<Map> {
                   popupController: _popupController,
                   popupBuilder: (i, marker) => GestureDetector(
                         onTap: () {
-
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const AddShop()));
-
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => const AddShop()));
                         },
                         child: Container(
                           width: 300,
                           height: 100,
                           color: Colors.transparent,
-                          child: Text(pro.address,
+                          child: Text(
+                            pro.address,
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
-                            softWrap: false,),
+                            softWrap: false,
+                          ),
                         ),
                       )),
               builder: (context, markers) {
@@ -119,9 +128,36 @@ class _MapState extends State<Map> {
             ),
           ],
         ),
-
-
-
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Container(
+                width: 300,
+                height: 100,
+                color: Colors.transparent,
+                child: Text(
+                  pro.address,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: false,
+                ),
+              ),
+              ElevatedButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(const Color(0xFFfb7750))),
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const AddShop()));
+                  },
+                  child: const Text(
+                    'Add',
+                  ))
+            ],
+          ),
+        ),
         Positioned(
           bottom: 22,
           left: 16,
@@ -139,15 +175,15 @@ class _MapState extends State<Map> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 64,right:16),
+          padding: const EdgeInsets.only(top: 64, right: 16),
           child: Row(
             children: [
               IconButton(
                 color: const Color(0xFFfb7750),
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> homeAdmin()));
-
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => homeAdmin()));
                 },
               ),
               Expanded(
@@ -183,6 +219,4 @@ class _MapState extends State<Map> {
       ]),
     );
   }
-
-
 }
