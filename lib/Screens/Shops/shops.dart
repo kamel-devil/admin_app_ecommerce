@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../presentation/constant.dart';
 import '../../provider/provider.dart';
@@ -12,9 +13,9 @@ import '../../res/cache_image_network.dart';
 import '../../res/color_data.dart';
 import '../../res/global_widget.dart';
 import '../../res/shimmer_loading.dart';
-import '../home_admin.dart';
+import '../../sub/categoryItem.dart';
+import 'edit_shop.dart';
 import 'shop.dart';
-
 
 class Shops extends StatefulWidget {
   const Shops({
@@ -27,13 +28,14 @@ class Shops extends StatefulWidget {
 
 class _ShopsState extends State<Shops> {
   final _globalWidget = GlobalWidget();
-  TextEditingController _etSearch = TextEditingController();
+  TextEditingController _shopSearch = TextEditingController();
   Timer? _timerDummy;
   final _shimmerLoading = ShimmerLoading();
   bool _loading = true;
-  String search='';
+  String search = '';
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
-
+  int selectedCategoryIndex = 0;
+  String idCate = '0';
   void _getData() {
     // this timer function is just for demo, so after 2 second, the shimmer loading will disappear and show the content
     _timerDummy = Timer(const Duration(seconds: 2), () {
@@ -53,7 +55,7 @@ class _ShopsState extends State<Shops> {
   @override
   void dispose() {
     _timerDummy?.cancel();
-    _etSearch.dispose();
+    _shopSearch.dispose();
     super.dispose();
   }
 
@@ -83,38 +85,44 @@ class _ShopsState extends State<Shops> {
             decoration: BoxDecoration(
               border: Border(
                   bottom: BorderSide(
-                color: Colors.grey[100]!,
-                width: 1.0,
-              )),
+                    color: Colors.grey[100]!,
+                    width: 1.0,
+                  )),
             ),
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             height: kToolbarHeight,
             child: TextFormField(
+              controller: _shopSearch,
               textAlignVertical: TextAlignVertical.bottom,
               maxLines: 1,
               style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               onChanged: (textValue) {
                 setState(() {
-                  search=textValue;
+                  _shopSearch = TextEditingController(text: textValue);
+
+                  search = textValue;
                 });
               },
               decoration: InputDecoration(
                 fillColor: Colors.grey[100],
                 filled: true,
                 hintText: 'Search Shops',
-                prefixIcon: IconButton(icon:const Icon(Icons.search), color: Colors.grey[500],
-                onPressed: (){
-                },
+                prefixIcon: IconButton(
+                  icon: const Icon(Icons.search),
+                  color: Colors.grey[500],
+                  onPressed: () {},
                 ),
                 suffixIcon: (search == '')
                     ? null
                     : GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            search =  '';
-                          });
-                        },
-                        child: Icon(Icons.close, color: Colors.grey[500])),
+                    onTap: () {
+                      setState(() {
+                        _shopSearch = TextEditingController(text: '');
+
+                        search = '';
+                      });
+                    },
+                    child: Icon(Icons.close, color: Colors.grey[500])),
                 focusedBorder: UnderlineInputBorder(
                     borderRadius: const BorderRadius.all(Radius.circular(5.0)),
                     borderSide: BorderSide(color: Colors.grey[200]!)),
@@ -143,83 +151,145 @@ class _ShopsState extends State<Shops> {
               }),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(children: [
-          Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Popular Shops',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
-                    GestureDetector(
-                      onTap: () {
-                        Fluttertoast.showToast(
-                            msg: 'Click last search',
-                            toastLength: Toast.LENGTH_SHORT);
-                      },
-                      child: const Text('view all',
-                          style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: PRIMARY_COLOR),
-                          textAlign: TextAlign.end),
-                    )
-                  ],
-                ),
-              ),
-              FutureBuilder(
-                future: p.datapopshops(),
-                builder:(context, snapshot) {
+      body: Column(children: [
+        Consumer<Funcprovider>(
+          builder: (BuildContext context, value, Widget? child) {
+            return FutureBuilder(
+                future: value.getDatacate(idCate),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData &&
+                      value.cate.isNotEmpty) {
+                    final list = snapshot.data as List;
+                    return Row(
+                      children: [
+                        IconButton(onPressed: (){
+                          setState(() {
+                            idCate='0';
+                          });
+                        }, icon:const Icon(Icons.arrow_back_ios_sharp)),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            padding:
+                            const EdgeInsets.fromLTRB(15, 5, 7, 10),
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: List.generate(
+                                list.length,
+                                    (index) => Padding(
+                                  padding:
+                                  const EdgeInsets.only(right: 8),
+                                  child: CategoryItem(
+                                    data: list[index],
+                                    isSelected:
+                                    index == selectedCategoryIndex,
+                                    onTap: () {
+                                      // value.getData(list[index]['id']);
+                                      setState(() {
+                                        selectedCategoryIndex = index;
+                                        idCate = list[index]['id'];
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                });
+          },
+        ),
 
-                if(snapshot.hasData && p.popshopsda.isNotEmpty){
-                  return Container(
-                      margin: const EdgeInsets.only(top: 16),
-                      height: boxImageSize1 * 1.90,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: p.popshopsda.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return _buildLastSearchCard(index, boxImageSize1);
-                        },
-                      ));
-                }else{
-                  return const CircularProgressIndicator();
-                }
-                }
+        Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Popular Shops',
+                      style: TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold)),
+                  GestureDetector(
+                    onTap: () {
+                      Fluttertoast.showToast(
+                          msg: 'Click last search',
+                          toastLength: Toast.LENGTH_SHORT);
+                    },
+                    child: const Text('view all',
+                        style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: PRIMARY_COLOR),
+                        textAlign: TextAlign.end),
+                  )
+                ],
               ),
-            ],
-          ),
-          FutureBuilder(
-            future: p.datashops(search),
-            builder: (context, snapshot) {
-              if(snapshot.hasData && p.shopsda.isNotEmpty){
-                return  RefreshIndicator(
-                    onRefresh: refreshData,
-                    child: (_loading == true)
-                    ? _shimmerLoading.buildShimmerContent()
-                    : SizedBox(
-                  height: 700,
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      key: _listKey,
-                      itemCount: p.shopsda.length,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return _buildItem(boxImageSize,index);
-                      }),
-                ));
-              }else{
-                return Container();
+            ),
+            FutureBuilder(
+                future: p.datapopshops(idCate),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData && p.popshopsda.isNotEmpty) {
+                    return Container(
+                        margin: const EdgeInsets.only(top: 16),
+                        height: boxImageSize1 * 1.90,
+                        child: ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: p.popshopsda.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return _buildLastSearchCard(index, boxImageSize1);
+                          },
+                        ));
+                  } else {
+                    return const CircularProgressIndicator();
+                  }
+                }),
+          ],
+        ),
+        Expanded(
+          child: SmartRefresher(
+            controller: p.refreshController,
+            enablePullUp: true,
+            onRefresh: () async {
+
+              final result = await p.getPassengerData(
+                  isRefresh: true,search, idCate);
+              if (result) {
+                p.refreshController.refreshCompleted();
+              } else {
+                p.refreshController.refreshFailed();
               }
-            }
-          )
-        ]),
-      ),
+            },
+            onLoading: () async {
+              final result = await p.getPassengerData(search, idCate);
+              if (result) {
+                p.refreshController.loadComplete();
+              } else {
+                p.refreshController.loadFailed();
+              }
+            },
+            child: ListView.separated(
+              shrinkWrap: true,
+              // key: _listKey,
+              // physics: AlwaysScrollableScrollPhysics (),
+              itemBuilder: (context, index) {
+                return _buildItem(boxImageSize, index);
+              },
+              itemCount: p.passengers.length,
+
+              separatorBuilder: (BuildContext context, int index) =>
+              const Divider(),
+            ),
+          ),
+        ),
+      ]),
     );
   }
 
@@ -236,7 +306,12 @@ class _ShopsState extends State<Shops> {
         color: Colors.white,
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => shop(
+                  id: p.popshopsda[index]['id'],
+                )));
+          },
           child: Column(
             children: <Widget>[
               ClipRRect(
@@ -274,6 +349,7 @@ class _ShopsState extends State<Shops> {
                       ],
                     ),
                     Text('${p.popshopsda[index]['address']}',
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                             fontSize: 13, fontWeight: FontWeight.bold)),
                     Container(
@@ -287,8 +363,8 @@ class _ShopsState extends State<Shops> {
                       child: Row(
                         children: [
                           _globalWidget.createRatingBar(
-                              rating:
-                                  double.parse('${p.popshopsda[index]['rate']['rate']}'),
+                              rating: double.parse(
+                                  '${p.popshopsda[index]['rate']['rate']}'),
                               size: 12),
                         ],
                       ),
@@ -322,8 +398,8 @@ class _ShopsState extends State<Shops> {
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => shop(
-                        id: p.shopsda[index]['id'],
-                      )));
+                            id: p.passengers[index]['id'],
+                          )));
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -331,11 +407,11 @@ class _ShopsState extends State<Shops> {
                   children: <Widget>[
                     ClipRRect(
                         borderRadius:
-                        const BorderRadius.all(Radius.circular(10)),
+                            const BorderRadius.all(Radius.circular(10)),
                         child: buildCacheNetworkImage(
                             width: boxImageSize,
                             height: boxImageSize,
-                            url: p.shopsda[index]['image'])),
+                            url: p.passengers[index]['image'])),
                     const SizedBox(
                       width: 10,
                     ),
@@ -347,7 +423,7 @@ class _ShopsState extends State<Shops> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                p.shopsda[index]['name'],
+                                p.passengers[index]['name'],
                                 style: const TextStyle(
                                     fontSize: 13, color: color2),
                                 maxLines: 3,
@@ -355,9 +431,9 @@ class _ShopsState extends State<Shops> {
                               ),
                               Icon(
                                 IconDataSolid(
-                                    int.parse(p.shopsda[index]['icon_name'])),
-                                color: HexColor.fromHex(
-                                    p.shopsda[index]['color']),
+                                    int.parse(p.passengers[index]['icon_name'])),
+                                color:
+                                    HexColor.fromHex(p.passengers[index]['color']),
                                 size: 15,
                               ),
                             ],
@@ -368,15 +444,18 @@ class _ShopsState extends State<Shops> {
                               children: [
                                 const Icon(Icons.location_on,
                                     color: SOFT_GREY, size: 12),
-                                Text(' ${p.shopsda[index]['address']}',
-                                    style: const TextStyle(
-                                        fontSize: 11, color: SOFT_GREY))
+                                Flexible(
+                                  child: Text(' ${p.passengers[index]['address']}',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                          fontSize: 11, color: SOFT_GREY)),
+                                )
                               ],
                             ),
                           ),
                           Container(
                             margin: const EdgeInsets.only(top: 5),
-                            child: Text('Phone: ${p.shopsda[index]['phone']}',
+                            child: Text('Phone: ${p.passengers[index]['phone']}',
                                 style: const TextStyle(
                                     fontSize: 11, color: SOFT_GREY)),
                           ),
@@ -386,10 +465,10 @@ class _ShopsState extends State<Shops> {
                               children: [
                                 _globalWidget.createRatingBar(
                                     rating: double.parse(
-                                        '${p.shopsda[index]['rate']['rate']}'),
+                                        '${p.passengers[index]['rate']['rate']}'),
                                     size: 12),
                                 Text(
-                                    '   (${p.shopsda[index]['rate']['count']})'),
+                                    '   (${p.passengers[index]['rate']['count']})'),
                               ],
                             ),
                           ),
@@ -399,63 +478,65 @@ class _ShopsState extends State<Shops> {
                   ],
                 ),
               ),
-              p.shopsda[index]['is_edit']
+              p.passengers[index]['is_edit']
                   ? Container(
-                margin: const EdgeInsets.only(top: 12),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      behavior: HitTestBehavior.translucent,
-                      onTap: () {
-                        showPopupDeleteFavorite(index, boxImageSize,
-                            p.shopsda[index]['id']);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                        height: 30,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                                width: 1, color: Colors.grey[300]!)),
-                        child: const Icon(Icons.delete,
-                            color: BLACK77, size: 20),
+                      margin: const EdgeInsets.only(top: 12),
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            behavior: HitTestBehavior.translucent,
+                            onTap: () {
+                              showPopupDeleteFavorite(
+                                  index, boxImageSize, p.passengers[index]['id']);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                              height: 30,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                      width: 1, color: Colors.grey[300]!)),
+                              child: const Icon(Icons.delete,
+                                  color: BLACK77, size: 20),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Expanded(
+                            child: OutlinedButton(
+                                onPressed: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => EditShop(
+                                        id:  p.passengers[index]['id'],
+
+                                      )));
+                                },
+                                style: ButtonStyle(
+                                    minimumSize: MaterialStateProperty.all(
+                                        const Size(0, 30)),
+                                    overlayColor: MaterialStateProperty.all(
+                                        Colors.transparent),
+                                    shape: MaterialStateProperty.all(
+                                        RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.0),
+                                    )),
+                                    side: MaterialStateProperty.all(
+                                      const BorderSide(
+                                          color: SOFT_BLUE, width: 1.0),
+                                    )),
+                                child: const Text(
+                                  'EDIT',
+                                  style: TextStyle(
+                                      color: SOFT_BLUE,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13),
+                                  textAlign: TextAlign.center,
+                                )),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Expanded(
-                      child: OutlinedButton(
-                          onPressed: () {
-                            Fluttertoast.showToast(
-                                msg: 'Item has been EDIT');
-                          },
-                          style: ButtonStyle(
-                              minimumSize: MaterialStateProperty.all(
-                                  const Size(0, 30)),
-                              overlayColor: MaterialStateProperty.all(
-                                  Colors.transparent),
-                              shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
-                                    borderRadius:
-                                    BorderRadius.circular(5.0),
-                                  )),
-                              side: MaterialStateProperty.all(
-                                const BorderSide(
-                                    color: SOFT_BLUE, width: 1.0),
-                              )),
-                          child: const Text(
-                            'EDIT',
-                            style: TextStyle(
-                                color: SOFT_BLUE,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13),
-                            textAlign: TextAlign.center,
-                          )),
-                    ),
-                  ],
-                ),
-              )
+                    )
                   : const Text('')
             ],
           ),

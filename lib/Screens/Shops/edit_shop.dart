@@ -2,7 +2,6 @@
 //lang
 
 import 'package:dropdown_search/dropdown_search.dart';
-import 'package:e_commerce/Screens/Shops/shop.dart';
 import 'package:e_commerce/Screens/Shops/shops.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -12,25 +11,24 @@ import 'package:universal_io/io.dart' as IO;
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../model/UserModel3.dart';
 import '../../presentation/constant.dart';
 import '../../provider/provider.dart';
 import '../../sub/categoryItem.dart';
 import '../../sub/meals_list_data.dart';
 import '../../model/UserModel.dart';
-import '../../model/UserModel2.dart';
 import '../home_admin.dart';
 import '../../map/tools/map.dart';
 
-class AddShop extends StatefulWidget {
-  const AddShop({Key? key, this.animationController}) : super(key: key);
+class EditShop extends StatefulWidget {
+  EditShop({required this.id, this.animationController});
+  String id;
   final AnimationController? animationController;
 
   @override
-  _AddShopState createState() => _AddShopState();
+  _EditShopState createState() => _EditShopState();
 }
 
-class _AddShopState extends State<AddShop> with TickerProviderStateMixin{
+class _EditShopState extends State<EditShop> with TickerProviderStateMixin{
   final _formKey = GlobalKey<FormState>();
   String _username = '';
   String _usernamear = '';
@@ -38,21 +36,19 @@ class _AddShopState extends State<AddShop> with TickerProviderStateMixin{
   String description = '';
   int selectedCategoryIndex = 0;
   String descriptionar = '';
-  String? idOwner ;
-  String _phone = '';
-  String _phone2 ='';
-  String pCate ='';
+  String? _selectedGender ;
+  int _phone = 011111111111;
+  int _phone2 = 011111111111;
   bool _termsChecked = true;
   dynamic _selectedFile;
   bool showPh = false;
   DateTime _dateTime = DateTime.now();
   List<DropdownMenuItem<int>> genderList = [];
   String? idCate;
-  String? idModel;
+  String? idOwner;
   int count = 9;
   String sub_Id='';
   int? chang;
-  UserModel x=UserModel();
 
   AnimationController? animationController;
   List<MealsListData> mealsListData = MealsListData.tabIconsList;
@@ -151,7 +147,7 @@ class _AddShopState extends State<AddShop> with TickerProviderStateMixin{
         //       title: const Text('Add new shop'),
         //       onTap: () {
         //         Navigator.of(context).push(
-        //             MaterialPageRoute(builder: (context) => const AddShop()));
+        //             MaterialPageRoute(builder: (context) => const EditShop()));
         //       },
         //     ),
         //     ListTile(
@@ -170,9 +166,9 @@ class _AddShopState extends State<AddShop> with TickerProviderStateMixin{
         //     ),
         //   ],
         // )),
-        body: Padding(
-          padding: const EdgeInsets.only(left: 16.0, right: 16, top: 16),
-          child: SingleChildScrollView(
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 16.0, right: 16, top: 16),
             child: Form(
               key: _formKey,
               child: Column(
@@ -258,47 +254,12 @@ class _AddShopState extends State<AddShop> with TickerProviderStateMixin{
                           onChanged: (value){
                             print(value!.id);
                             setState(() {
-                              idOwner=value.id;
+                              _selectedGender=value.id;
                             });
                           },
                           asyncItems: (filter) {
                             return
                              p.getData(filter);
-                          } ,
-                          compareFn: (i, s) => i.isEqual(s),
-                          popupProps: PopupPropsMultiSelection.modalBottomSheet(
-                            isFilterOnline: true,
-                            showSelectedItems: true,
-                            showSearchBox: true,
-                            itemBuilder: _customPopupItemBuilderExample1,
-                            favoriteItemProps: FavoriteItemProps(
-                              showFavoriteItems: true,
-                              favoriteItems: (us) {
-                                return us
-                                    .where((e) => e.name!.contains("Mrs"))
-                                    .toList();
-                              },
-                            ),
-                          ),
-// selectedItem: x.name!,
-                        ),
-                      ),
-                      const Padding(padding: EdgeInsets.all(4)),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DropdownSearch<UserModel2>(
-                          onChanged: (value){
-                            print(value!.id);
-                            setState(() {
-                              idModel=value.id;
-                            });
-                          },
-                          asyncItems: (filter) {
-                            return
-                             p.modules(filter);
                           } ,
                           compareFn: (i, s) => i.isEqual(s),
                           popupProps: PopupPropsMultiSelection.modalBottomSheet(
@@ -315,64 +276,10 @@ class _AddShopState extends State<AddShop> with TickerProviderStateMixin{
                               },
                             ),
                           ),
-// selectedItem: x.name!,
+
                         ),
                       ),
                       const Padding(padding: EdgeInsets.all(4)),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DropdownSearch<UserModel3>.multiSelection(
-                          onChanged: (value){
-                            value.forEach((element) {
-                              print(element.id);
-                              pCate+='${element.id},';
-
-                            });
-                          },
-                          asyncItems: (filter) => p.productCategories(filter,'$idModel'),
-                          compareFn: (i, s) => i.isEqual(s),
-                          popupProps: PopupPropsMultiSelection.modalBottomSheet(
-                            showSearchBox: true,
-                            itemBuilder: _customPopupItemBuilderExample3,
-                            favoriteItemProps: FavoriteItemProps(
-                              showFavoriteItems: true,
-                              favoriteItems: (us) {
-                                return us
-                                    .where((e) => e.name!.contains("n"))
-                                    .toList();
-                              },
-                              favoriteItemBuilder: (context, item, isSelected) {
-                                return Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 6),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.grey),
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Colors.grey[100]),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        item.name!,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(color: Colors.indigo),
-                                      ),
-                                      const Padding(padding: EdgeInsets.only(left: 8)),
-                                      isSelected
-                                          ? const Icon(Icons.check_box_outlined)
-                                          : const SizedBox.shrink(),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          selectedItems: [],
-                        ),
-                      ),
-
                     ],
                   ),
 
@@ -456,7 +363,7 @@ class _AddShopState extends State<AddShop> with TickerProviderStateMixin{
                     },
                     onSaved: (value) {
                       setState(() {
-                        _phone = value!;
+                        _phone = int.parse(value.toString());
                       });
                     },
                   ),
@@ -474,7 +381,7 @@ class _AddShopState extends State<AddShop> with TickerProviderStateMixin{
                           },
                           onSaved: (value) {
                             setState(() {
-                              _phone2 = value!;
+                              _phone2 = int.parse(value.toString());
                             });
                           },
                         )
@@ -1020,10 +927,8 @@ class _AddShopState extends State<AddShop> with TickerProviderStateMixin{
                             if (_formKey.currentState!.validate() &&
                                 _termsChecked) {
                               _formKey.currentState?.save();
-                              print(sub_Id);
                               p.uploadShop({
-                                'owner': '$idOwner',
-                                'module': '$idModel',
+                                'owner': '$_selectedGender',
                                 'Email': _email,
                                 'name_en': _username,
                                 'name_ar': _usernamear,
@@ -1033,18 +938,15 @@ class _AddShopState extends State<AddShop> with TickerProviderStateMixin{
                                 'long': '${p.long}',
                                 'desc_en': description,
                                 'desc_ar': descriptionar,
-                                'phone': _phone,
-                                'phone2': _phone2,
+                                'phone': '$_phone',
+                                'phone2': '$_phone2',
                                 'cat': '$idCate',
                                 'data': '$_dateTime',
-                                'sub':sub_Id,
-                                'pcat':pCate
-                              }, p.selectedFile!)
-                                  .whenComplete(() =>
-                                  Navigator.push(
+                                'sub':sub_Id
+                              }, p.selectedFile!).whenComplete(() => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) =>shop(id:'${p.shop['shop_id']}'))));
+                                      builder: (context) => const Shops())));
 
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
@@ -1059,35 +961,10 @@ class _AddShopState extends State<AddShop> with TickerProviderStateMixin{
               ),
             ),
           ),
-        ));
-  }
-  Widget _customPopupItemBuilderExample2(
-      BuildContext context,
-      UserModel2? item,
-      bool isSelected,
-      ) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: !isSelected
-          ? null
-          : BoxDecoration(
-        border: Border.all(color: Colors.deepOrange),
-        borderRadius: BorderRadius.circular(5),
-        color: Colors.white,
-      ),
-      child: ListTile(
-        selected: isSelected,
-        // trailing: Text(item?.id ?? ''),
-
-        title: Text(item?.name ?? ''),
-        leading:  CircleAvatar(
-          // this does not work - throws 404 error
-          backgroundImage: NetworkImage(item?.avatar ?? ''),
-        ),
-      ),
+        )
     );
   }
-  Widget _customPopupItemBuilderExample1(
+  Widget _customPopupItemBuilderExample2(
       BuildContext context,
       UserModel? item,
       bool isSelected,
@@ -1104,32 +981,6 @@ class _AddShopState extends State<AddShop> with TickerProviderStateMixin{
       child: ListTile(
         selected: isSelected,
         trailing: Text(item?.id ?? ''),
-
-        title: Text(item?.name ?? ''),
-        leading:  CircleAvatar(
-          // this does not work - throws 404 error
-          backgroundImage: NetworkImage(item?.avatar ?? ''),
-        ),
-      ),
-    );
-  }
-  Widget _customPopupItemBuilderExample3(
-      BuildContext context,
-      UserModel3? item,
-      bool isSelected,
-      ) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: !isSelected
-          ? null
-          : BoxDecoration(
-        border: Border.all(color: Colors.deepOrange),
-        borderRadius: BorderRadius.circular(5),
-        color: Colors.white,
-      ),
-      child: ListTile(
-        selected: isSelected,
-        // trailing: Text(item?.id ?? ''),
 
         title: Text(item?.name ?? ''),
         leading:  CircleAvatar(

@@ -110,7 +110,7 @@ class _Map1State extends State<Map1> {
                           height: 100,
                           color: Colors.transparent,
                           child: Text(
-                            pro.address,
+                            pro.address_ar,
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                             softWrap: false,
@@ -138,7 +138,7 @@ class _Map1State extends State<Map1> {
                 height: 100,
                 color: Colors.transparent,
                 child: Text(
-                  pro.address,
+                  pro.address_ar,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   softWrap: false,

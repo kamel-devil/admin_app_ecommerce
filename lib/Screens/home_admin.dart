@@ -17,13 +17,13 @@ class _homeAdminState extends State<homeAdmin> {
   late PageController _pageController;
 
   final List<Sales> _data = [
-    Sales("2014", 50),
-    Sales("2015", 120),
-    Sales("2016", 140),
-    Sales("2017", 170),
-    Sales("2018", 80),
-    Sales("2019", 110),
-    Sales("2020", 260),
+    Sales("2014", 5),
+    Sales("2015", 10),
+    Sales("2016", 15),
+    Sales("2017", 20),
+    Sales("2018", 13),
+    Sales("2019", 11),
+    Sales("2020", 9),
   ];
 
   @override
@@ -158,8 +158,8 @@ class _homeAdminState extends State<homeAdmin> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _globalWidget.createDetailWidget(
-                title: 'Bar Charts 1 (Simple Bar Charts)'.tr,
-                desc: 'This is the example of simple bar charts'.tr),
+                title: 'Bar Charts 1 (Simple Bar Charts)',
+                desc: 'This is the example of simple bar charts'),
             Container(
               margin: const EdgeInsets.symmetric(vertical: 8),
               child: SizedBox(

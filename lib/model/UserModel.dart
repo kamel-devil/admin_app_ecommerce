@@ -1,11 +1,11 @@
 class UserModel {
   final String? id;
   final DateTime? createdAt;
-  final String name;
+  final String? name;
   final String? avatar;
 
   UserModel(
-      {required this.id, this.createdAt, required this.name, this.avatar});
+      { this.id, this.createdAt,  this.name, this.avatar});
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -36,6 +36,6 @@ class UserModel {
 
   @override
 
-  String toString() => name
+  String toString() => name!
   ;
 }

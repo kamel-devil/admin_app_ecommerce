@@ -11,7 +11,7 @@ import '../../provider/provider.dart';
 import '../../res/cache_image_network.dart';
 import '../../res/global_widget.dart';
 import 'edit_owner.dart';
-import '../home_admin.dart';
+import 'owner.dart';
 
 class Owners extends StatefulWidget {
   const Owners({Key? key}) : super(key: key);
@@ -129,7 +129,7 @@ class _OwnersState extends State<Owners> {
           child: FutureBuilder(
             future: p.dataOwner(),
             builder: (context, snapshot) {
-              if (snapshot.hasData) {
+              if (snapshot.hasData&&p.ownerData.isNotEmpty) {
                 return Column(children: [
                   // Card(
                   //   elevation: 2,
@@ -269,7 +269,13 @@ class _OwnersState extends State<Owners> {
             child: Column(
               children: [
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => Owner(
+                          id:  p.ownerData[index]['id'],
+
+                        )));
+                  },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -10,6 +10,7 @@ import '../main.dart';
 import '../presentation/constant.dart';
 import '../provider/provider.dart';
 import '../res/cache_image_network.dart';
+import 'pages/profile_page.dart';
 
 class User1Page extends StatefulWidget {
   @override
@@ -132,10 +133,8 @@ class _User1PageState extends State<User1Page> {
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    Fluttertoast.showToast(
-                                        msg:
-                                            'Click account information / user profile',
-                                        toastLength: Toast.LENGTH_SHORT);
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(builder: (context) =>  ProfilePage()));
                                   },
                                   child: Row(
                                     children: [

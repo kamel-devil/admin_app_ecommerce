@@ -61,16 +61,16 @@ class _HomeDrawerState extends State<HomeDrawer> {
         labelName: 'AddOwner',
         icon: const Icon(Icons.person_add),
       ),
-      DrawerList(
-        index: DrawerIndex.Help,
-        labelName: 'Arabic',
-        icon: const Icon(Icons.language),
-      ),
-      DrawerList(
-        index: DrawerIndex.Help,
-        labelName: 'Englis',
-        icon: const Icon(Icons.language),
-      ),
+      // DrawerList(
+      //   index: DrawerIndex.Help,
+      //   labelName: 'Arabic',
+      //   icon: const Icon(Icons.language),
+      // ),
+      // DrawerList(
+      //   index: DrawerIndex.Help,
+      //   labelName: 'Englis',
+      //   icon: const Icon(Icons.language),
+      // ),
       DrawerList(
         index: DrawerIndex.Help,
         labelName: 'Help',

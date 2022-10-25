@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../Screens/Owner/add_owner.dart';
 import '../Screens/Owner/owners.dart';
 import '../Screens/Shops/shops.dart';
+import '../Screens/ranking/leader_bord_screen.dart';
 import '../map/tools/map.dart';
 import 'app_theme.dart';
 import 'drawer_user_controller.dart';
@@ -22,7 +23,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   @override
   void initState() {
     drawerIndex = DrawerIndex.HOME;
-    screenView =  homeAdmin();
+    screenView =  LeaderBoardScreen();
     super.initState();
   }
 
@@ -55,7 +56,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         case DrawerIndex.HOME:
 
           setState(() {
-            screenView =  homeAdmin();
+            screenView =  LeaderBoardScreen();
           });
           break;
         case DrawerIndex.Shops:

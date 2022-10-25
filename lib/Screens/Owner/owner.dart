@@ -3,18 +3,24 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../presentation/constant.dart';
 
 import '../../provider/provider.dart';
 import '../../res/cache_image_network.dart';
+import '../../res/color_data.dart';
 import '../../res/global_widget.dart';
+import '../../res/shimmer_loading.dart';
+import '../Shops/edit_shop.dart';
+import '../Shops/shop.dart';
 import '../home_admin.dart';
 
 class Owner extends StatefulWidget {
-  const Owner({Key? key}) : super(key: key);
-
+  Owner({required this.id});
+  String id;
   @override
   State<Owner> createState() => _OwnerState();
 }
@@ -24,6 +30,9 @@ class _OwnerState extends State<Owner> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   Timer? _timerDummy;
   TextEditingController _etSearch = TextEditingController();
+  final _shimmerLoading = ShimmerLoading();
+  bool _loading = true;
+  String search = '';
 
   @override
   void initState() {
@@ -76,24 +85,25 @@ class _OwnerState extends State<Owner> {
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
               height: kToolbarHeight,
               child: TextFormField(
-                controller: _etSearch,
                 textAlignVertical: TextAlignVertical.bottom,
                 maxLines: 1,
                 style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                 onChanged: (textValue) {
-                  setState(() {});
+                  setState(() {
+                    search = textValue;
+                  });
                 },
                 decoration: InputDecoration(
                   fillColor: Colors.grey[100],
                   filled: true,
                   hintText: 'Search shop',
                   prefixIcon: Icon(Icons.search, color: Colors.grey[500]),
-                  suffixIcon: (_etSearch.text == '')
+                  suffixIcon: (search == '')
                       ? null
                       : GestureDetector(
                           onTap: () {
                             setState(() {
-                              _etSearch = TextEditingController(text: '');
+                              search = '';
                             });
                           },
                           child: Icon(Icons.close, color: Colors.grey[500])),
@@ -236,20 +246,44 @@ class _OwnerState extends State<Owner> {
                       ),
                     ),
                   ),
-                  RefreshIndicator(
-                    onRefresh: refreshData,
-                    child: Container(
-                      height: 700,
-                      child: AnimatedList(
-                          shrinkWrap: true,
-                          key: _listKey,
-                          initialItemCount: p.ownerData.length,
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          itemBuilder: (context, index, animation) {
-                            return _buildItem(boxImageSize, animation, index);
-                          }),
+                  Expanded(
+                    child: SmartRefresher(
+                      controller: p.refreshController,
+                      enablePullUp: true,
+                      onRefresh: () async {
+                        print('RRRRRRRRRRRRRRRRRRR============');
+
+                        final result = await p.getPassengerData(
+                            isRefresh: true, '', '0');
+                        if (result) {
+                          p.refreshController.refreshCompleted();
+                        } else {
+                          p.refreshController.refreshFailed();
+                        }
+                      },
+                      onLoading: () async {
+                        print('loading============');
+                        final result = await p.getPassengerData('', '0');
+                        if (result) {
+                          p.refreshController.loadComplete();
+                        } else {
+                          p.refreshController.loadFailed();
+                        }
+                      },
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        // key: _listKey,
+                        // physics: AlwaysScrollableScrollPhysics (),
+                        itemBuilder: (context, index) {
+                          return _buildItem(boxImageSize, index);
+                        },
+                        itemCount: p.passengers.length,
+
+                        separatorBuilder: (BuildContext context, int index) =>
+                        const Divider(),
+                      ),
                     ),
-                  )
+                  ),
                 ]);
               } else {
                 return const CircularProgressIndicator();
@@ -259,132 +293,164 @@ class _OwnerState extends State<Owner> {
         ));
   }
 
-  Widget _buildItem(boxImageSize, animation, index) {
+  Widget _buildItem(boxImageSize, index) {
     var p = Provider.of<Funcprovider>(context);
 
-    return SizeTransition(
-      sizeFactor: animation,
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(12, 6, 12, 0),
-        child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          elevation: 2,
-          color: Colors.white,
-          child: Container(
-            margin: const EdgeInsets.all(8),
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: () {},
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      ClipRRect(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
-                          child: buildCacheNetworkImage(
-                              width: boxImageSize,
-                              height: boxImageSize,
-                              url: p.ownerData[index]['image'])),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              p.ownerData[index]['username'],
-                              style:
-                                  const TextStyle(fontSize: 13, color: color2),
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Row(
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 6, 12, 0),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        elevation: 2,
+        color: Colors.white,
+        child: Container(
+          margin: const EdgeInsets.all(8),
+          child: Column(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => shop(
+                        id: p.passengers[index]['id'],
+                      )));
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    ClipRRect(
+                        borderRadius:
+                        const BorderRadius.all(Radius.circular(10)),
+                        child: buildCacheNetworkImage(
+                            width: boxImageSize,
+                            height: boxImageSize,
+                            url: p.passengers[index]['image'])),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                p.passengers[index]['name'],
+                                style: const TextStyle(
+                                    fontSize: 13, color: color2),
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Icon(
+                                IconDataSolid(
+                                    int.parse(p.passengers[index]['icon_name'])),
+                                color:
+                                HexColor.fromHex(p.passengers[index]['color']),
+                                size: 15,
+                              ),
+                            ],
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 5),
+                            child: Row(
                               children: [
-                                Text(
-                                  p.ownerData[index]['f_name'],
-                                  style: const TextStyle(
-                                      fontSize: 13, color: color2),
-                                ),
-                                Text(
-                                  p.ownerData[index]['l_name'],
-                                  style: const TextStyle(
-                                      fontSize: 13, color: color2),
-                                ),
+                                const Icon(Icons.location_on,
+                                    color: SOFT_GREY, size: 12),
+                                Flexible(
+                                  child: Text(' ${p.passengers[index]['address']}',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                          fontSize: 11, color: SOFT_GREY)),
+                                )
                               ],
                             ),
-                            Container(
-                              margin: const EdgeInsets.only(top: 5),
-                              child: Text(
-                                  'Phone: ${p.ownerData[index]['phone']}',
-                                  style: const TextStyle(
-                                      fontSize: 11, color: SOFT_GREY)),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 5),
+                            child: Text('Phone: ${p.passengers[index]['phone']}',
+                                style: const TextStyle(
+                                    fontSize: 11, color: SOFT_GREY)),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 5),
+                            child: Row(
+                              children: [
+                                _globalWidget.createRatingBar(
+                                    rating: double.parse(
+                                        '${p.passengers[index]['rate']['rate']}'),
+                                    size: 12),
+                                Text(
+                                    '   (${p.passengers[index]['rate']['count']})'),
+                              ],
                             ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
                 ),
-                Container(
-                  margin: const EdgeInsets.only(top: 12),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: () {
-                          showPopupDeleteFavorite(index, boxImageSize);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                          height: 30,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                  width: 1, color: Colors.grey[300]!)),
-                          child: const Icon(Icons.delete,
-                              color: BLACK77, size: 20),
-                        ),
+              ),
+              p.passengers[index]['is_edit']
+                  ? Container(
+                margin: const EdgeInsets.only(top: 12),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTap: () {
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                        height: 30,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                                width: 1, color: Colors.grey[300]!)),
+                        child: const Icon(Icons.delete,
+                            color: BLACK77, size: 20),
                       ),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Expanded(
-                        child: OutlinedButton(
-                            onPressed: () {
-                              Fluttertoast.showToast(msg: 'Item has been EDIT');
-                            },
-                            style: ButtonStyle(
-                                minimumSize: MaterialStateProperty.all(
-                                    const Size(0, 30)),
-                                overlayColor: MaterialStateProperty.all(
-                                    Colors.transparent),
-                                shape: MaterialStateProperty.all(
-                                    RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                )),
-                                side: MaterialStateProperty.all(
-                                  const BorderSide(
-                                      color: SOFT_BLUE, width: 1.0),
-                                )),
-                            child: const Text(
-                              'EDIT',
-                              style: TextStyle(
-                                  color: SOFT_BLUE,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 13),
-                              textAlign: TextAlign.center,
-                            )),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
+                    ),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Expanded(
+                      child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => EditShop(
+                                  id:  p.passengers[index]['id'],
+
+                                )));
+                          },
+                          style: ButtonStyle(
+                              minimumSize: MaterialStateProperty.all(
+                                  const Size(0, 30)),
+                              overlayColor: MaterialStateProperty.all(
+                                  Colors.transparent),
+                              shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                  )),
+                              side: MaterialStateProperty.all(
+                                const BorderSide(
+                                    color: SOFT_BLUE, width: 1.0),
+                              )),
+                          child: const Text(
+                            'EDIT',
+                            style: TextStyle(
+                                color: SOFT_BLUE,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13),
+                            textAlign: TextAlign.center,
+                          )),
+                    ),
+                  ],
+                ),
+              )
+                  : const Text('')
+            ],
           ),
         ),
       ),

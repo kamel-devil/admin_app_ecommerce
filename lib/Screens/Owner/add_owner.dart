@@ -243,7 +243,6 @@ class _AddOwnerState extends State<AddOwner> {
                     },
                   ),
                   TextFormField(
-
                     decoration:
                     const InputDecoration(hintText: 'Phone', labelText: 'Enter Phone'),
                     keyboardType: TextInputType.number,

@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 
-import 'UserModel.dart';
+import '../model/UserModel.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -52,12 +52,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           showFavoriteItems: true,
                           favoriteItems: (us) {
                             return us
-                                .where((e) => e.name.contains("Mrs"))
+                                .where((e) => e.name!.contains("Mrs"))
                                 .toList();
                           },
                         ),
                       ),
-
                     ),
                   ),
                   const Padding(padding: EdgeInsets.all(4)),
@@ -68,7 +67,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   Expanded(
                     child: DropdownSearch<UserModel>.multiSelection(
                       onChanged: (value){
-                        value.forEach((element) { print(element.id);});
+                        value.forEach((element) {
+                          print(element.id);
+
+                        });
                       },
                       asyncItems: (filter) => getData(filter),
                       compareFn: (i, s) => i.isEqual(s),
@@ -79,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           showFavoriteItems: true,
                           favoriteItems: (us) {
                             return us
-                                .where((e) => e.name.contains("n"))
+                                .where((e) => e.name!.contains("n"))
                                 .toList();
                           },
                           favoriteItemBuilder: (context, item, isSelected) {
@@ -93,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               child: Row(
                                 children: [
                                   Text(
-                                    item.name,
+                                    item.name!,
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(color: Colors.indigo),
                                   ),
@@ -107,6 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           },
                         ),
                       ),
+                      selectedItems: [],
                     ),
                   ),
 
