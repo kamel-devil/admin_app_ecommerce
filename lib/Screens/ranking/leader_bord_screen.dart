@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
+import '../../main.dart';
 import '../../provider/provider.dart';
 import 'avatar_image.dart';
 
@@ -13,7 +14,7 @@ class LeaderBoardScreen extends StatefulWidget {
 }
 
 class _LeaderBoardScreenState extends State<LeaderBoardScreen> {
-  ItemScrollController _scrollController = ItemScrollController();
+  final ItemScrollController _scrollController = ItemScrollController();
   String time = 'day';
 
   @override
@@ -72,95 +73,273 @@ class _LeaderBoardScreenState extends State<LeaderBoardScreen> {
                 ],
               ),
             ),
-            Container(
-                margin: const EdgeInsets.only(right: 15),
-                padding: const EdgeInsets.all(15),
-                width: 180,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25),
-                  color: Colors.white.withOpacity(0.4),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.white.withOpacity(0.1),
-                      spreadRadius: 1,
-                      blurRadius: 1,
-                      offset: const Offset(1, 1), // changes position of shadow
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: const [
-                        AvatarImage(
-                          'https://www.pngitem.com/pimgs/m/3-31745_shopping-cart-icon-blue-hd-png-download.png',
-                          isSVG: false,
-                          width: 30,
-                          height: 30,
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Expanded(
-                            child: Text(
-                          'Shops',
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w600),
-                        )),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
-                              "Count",
-                              style: TextStyle(
-                                  fontSize: 11, fontWeight: FontWeight.w300),
-                            ),
-                            SizedBox(
-                              height: 3,
-                            ),
-                            Text(
-                              '50',
-                              maxLines: 1,
-                              overflow: TextOverflow.fade,
-                              style: TextStyle(
-                                  fontSize: 12, fontWeight: FontWeight.w500),
-                            ),
-                          ],
-                        ),
-                        Container(
-                          padding: const EdgeInsets.only(left: 3, right: 3),
+            FutureBuilder(
+              future: p.card(),
+              builder: (context, snapshot) {
+                if(snapshot.hasData&&p.dataCard.isNotEmpty){
+                  return Column(
+                    children: [
+                      Container(
+                          padding: const EdgeInsets.all(15),
+                          width: 380,
                           decoration: BoxDecoration(
-                              color: Colors.white.withAlpha(40),
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Row(
-                            children: const [
-                              Icon(Icons.arrow_drop_up_sharp,
-                                  color: Colors.black),
-                              Text(
-                                'change',
-                                style: TextStyle(
-                                    fontSize: 10, color: Colors.black),
+                            borderRadius: BorderRadius.circular(25),
+                            color: Colors.white.withOpacity(0.4),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.white.withOpacity(0.1),
+                                spreadRadius: 1,
+                                blurRadius: 1,
+                                offset: const Offset(1, 1), // changes position of shadow
                               ),
                             ],
                           ),
-                        )
-                      ],
-                    ),
-                  ],
-                )),
-            SizedBox(height: 30),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children:  [
+                                  const AvatarImage(
+                                    'https://www.pngitem.com/pimgs/m/3-31745_shopping-cart-icon-blue-hd-png-download.png',
+                                    isSVG: false,
+                                    width: 40,
+                                    height: 40,
+                                  ),
+                                  const SizedBox(width: 30),
+                                  Expanded(
+                                      child: Text(
+                                       p.dataCard[0]['title']??'Shops',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.fade,
+                                        style: const TextStyle(
+                                            fontSize: 24, fontWeight: FontWeight.w600),
+                                      )),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children:  [
+                                      Text(
+                                        '${p.dataCard[0]['value']??'9999'}',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.fade,
+                                        style: TextStyle(
+                                            fontSize: 24, fontWeight: FontWeight.w500,color:HexColor((p.dataCard[0]['color'])) ),
+                                      ),
+                                    ],
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.only(left: 3, right: 3),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white.withAlpha(40),
+                                        borderRadius: BorderRadius.circular(30)),
+                                    child: Row(
+                                      children:  [
+                                        p.dataCard[0]['change']==true?
+                                         Icon(Icons.trending_up,
+                                          color: HexColor((p.dataCard[0]['changeColor'])),size: 40,): Icon(Icons.trending_down,
+                                          color:HexColor((p.dataCard[0]['changeColor'])),size: 40,),
+
+                                         Text(
+                                           p.dataCard[0]['percent']?? '90%',
+                                          style: TextStyle(
+                                              fontSize: 24, color: HexColor((p.dataCard[0]['changeColor']))),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ],
+                          )),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                                padding: const EdgeInsets.all(15),
+                                width: 180,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(25),
+                                  color: Colors.white.withOpacity(0.4),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.white.withOpacity(0.1),
+                                      spreadRadius: 1,
+                                      blurRadius: 1,
+                                      offset: const Offset(1, 1), // changes position of shadow
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children:  [
+                                        const AvatarImage(
+                                          'https://www.pngitem.com/pimgs/m/3-31745_shopping-cart-icon-blue-hd-png-download.png',
+                                          isSVG: false,
+                                          width: 30,
+                                          height: 30,
+                                        ),
+                                        const SizedBox(
+                                          width: 5,
+                                        ),
+                                        Expanded(
+                                            child: Text(
+                                              p.dataCard[1]['title']??'Shops',
+                                              textAlign: TextAlign.center,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.fade,
+                                              style: const TextStyle(
+                                                  fontSize: 14, fontWeight: FontWeight.w600),
+                                            )),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 15,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children:  [
+                                            Text(
+                                              '${p.dataCard[1]['value']??'9999'}',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.fade,
+                                              style: TextStyle(
+                                                  fontSize: 12, fontWeight: FontWeight.w500,color: HexColor((p.dataCard[1]['color']))),
+                                            ),
+                                          ],
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.only(left: 3, right: 3),
+                                          decoration: BoxDecoration(
+                                              color: Colors.white.withAlpha(40),
+                                              borderRadius: BorderRadius.circular(30)),
+                                          child: Row(
+                                            children:  [
+                p.dataCard[1]['change']==true?
+                Icon(Icons.trending_up,
+                color: HexColor((p.dataCard[1]['changeColor'])),): Icon(Icons.trending_down,
+                color:HexColor((p.dataCard[1]['changeColor'])),),
+
+                Text(
+                p.dataCard[1]['percent']?? '90%',
+                style: TextStyle(
+                fontSize: 10, color: HexColor((p.dataCard[1]['changeColor']))),
+                ),
+                ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                )),
+                            Container(
+                                padding: const EdgeInsets.all(15),
+                                width: 180,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(25),
+                                  color: Colors.white.withOpacity(0.4),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.white.withOpacity(0.1),
+                                      spreadRadius: 1,
+                                      blurRadius: 1,
+                                      offset: const Offset(1, 1), // changes position of shadow
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children:  [
+                                        const AvatarImage(
+                                          'https://www.pngitem.com/pimgs/m/3-31745_shopping-cart-icon-blue-hd-png-download.png',
+                                          isSVG: false,
+                                          width: 30,
+                                          height: 30,
+                                        ),
+                                        const SizedBox(
+                                          width: 5,
+                                        ),
+                                        Expanded(
+                                            child: Text(
+                                              p.dataCard[2]['title']??'Shops',
+                                              textAlign: TextAlign.center,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.fade,
+                                              style: const TextStyle(
+                                                  fontSize: 14, fontWeight: FontWeight.w600),
+                                            )),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 15,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children:  [
+                                            Text(
+                                              '${p.dataCard[2]['value']??'9999'}',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.fade,
+                                              style: TextStyle(
+                                                  fontSize: 12, fontWeight: FontWeight.w500,color: HexColor((p.dataCard[2]['color']))),
+                                            ),
+                                          ],
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.only(left: 3, right: 3),
+                                          decoration: BoxDecoration(
+                                              color: Colors.white.withAlpha(40),
+                                              borderRadius: BorderRadius.circular(30)),
+                                          child: Row(
+                                            children:  [
+                                              p.dataCard[2]['change']==true?
+                                              Icon(Icons.trending_up,
+                                                color: HexColor((p.dataCard[2]['changeColor'])),): Icon(Icons.trending_down,
+                                                color:HexColor((p.dataCard[2]['changeColor'])),),
+
+                                              Text(
+                                                p.dataCard[2]['percent']?? '90%',
+                                                style: TextStyle(
+                                                    fontSize: 10, color: HexColor((p.dataCard[2]['changeColor']))),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                )),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+
+                }else{
+                  return const CircularProgressIndicator();
+                }
+              }
+            ),
+
+            const SizedBox(height: 30),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
@@ -185,6 +364,7 @@ class _LeaderBoardScreenState extends State<LeaderBoardScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               InkWell(
                                 onTap: () {
@@ -192,10 +372,12 @@ class _LeaderBoardScreenState extends State<LeaderBoardScreen> {
                                     time = 'day';
                                   });
                                 },
+                                highlightColor: Colors.red.withOpacity(0.4),
+                                splashColor:Colors.red,
                                 child: const Text('Day',
                                     style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 16.0,
+                                        fontSize: 24.0,
                                         fontWeight: FontWeight.bold)),
                               ),
                               InkWell(
@@ -207,7 +389,7 @@ class _LeaderBoardScreenState extends State<LeaderBoardScreen> {
                                 child: const Text('week',
                                     style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 16.0,
+                                        fontSize: 24.0,
                                         fontWeight: FontWeight.bold)),
                               ),
                               InkWell(
@@ -219,7 +401,7 @@ class _LeaderBoardScreenState extends State<LeaderBoardScreen> {
                                 child: const Text('month',
                                     style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 16.0,
+                                        fontSize: 24.0,
                                         fontWeight: FontWeight.bold)),
                               ),
                             ],

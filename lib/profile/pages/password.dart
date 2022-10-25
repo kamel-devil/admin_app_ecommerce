@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../provider/provider.dart';
 import '../widgets/appbar_widget.dart';
+import 'profile_page.dart';
 
 
 // This class handles the Page to edit the Phone Section of the User Profile.
@@ -156,7 +157,7 @@ class EditPasswordFormPageState extends State<EditPasswordFormPage> {
                             onPressed: () {
                               // Validate returns true if the form is valid, or false otherwise.
                               _formKey.currentState?.save();
-                              p.updateProfilePassword(_old_Password,_new_Password);
+                              p.updateProfilePassword(_old_Password,_new_Password).whenComplete(() => Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ProfilePage())));
                             },
                             child: const Text(
                               'Update',

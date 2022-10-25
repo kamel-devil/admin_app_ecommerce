@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../provider/provider.dart';
 import '../widgets/appbar_widget.dart';
+import 'profile_page.dart';
 
 class EditImagePage extends StatefulWidget {
   const EditImagePage({Key? key}) : super(key: key);
@@ -89,7 +90,7 @@ class _EditImagePageState extends State<EditImagePage> {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () {
-                    p.updateProfileWithImage(p.selectedFile != null ? p.selectedFile!.path :p.dataProfile['image'],);
+                    p.updateProfileWithImage(p.selectedFile != null ? p.selectedFile!.path :p.dataProfile['image'],).whenComplete(() => Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ProfilePage())));
                   },
                   child: const Text(
                     'Update',

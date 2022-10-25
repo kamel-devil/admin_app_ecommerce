@@ -25,6 +25,7 @@ class Funcprovider with ChangeNotifier {
   List sub = [];
   List ownerData = [];
   List dropOwner = [];
+  List dataCard = [];
   Map ownerEdit = {};
   Map userData = {};
   List<DropdownMenuItem<String>> owner = [];
@@ -316,7 +317,7 @@ class Funcprovider with ChangeNotifier {
   }
   Future<List<UserModel2>> modules(filter) async {
     var response = await dio.Dio().get(
-      "https://ibtikarsoft.net/finder/api/admin/modules.php?lang=ar&token=$token",
+      "https://ibtikarsoft.net/finder/api/admin/modules.php?lang=$lang&token=$token",
       queryParameters: {"filter": filter},
     );
     if (response.statusCode == 200) {
@@ -332,7 +333,7 @@ class Funcprovider with ChangeNotifier {
   }
   Future<List<UserModel3>> productCategories(filter,String id) async {
     var response = await dio.Dio().get(
-      "https://ibtikarsoft.net/finder/api/user/pcategories.php?lang=ar&token=v4mdo2s8769e&module=$id",
+      "https://ibtikarsoft.net/finder/api/admin/pcategories.php?lang=$lang&token=$token&module=$id",
       queryParameters: {"filter": filter},
     );
     if (response.statusCode == 200) {
@@ -353,7 +354,7 @@ class Funcprovider with ChangeNotifier {
       var x = json.decode(D.body);
       dataRanking = x;
     }
-    print(dataRanking.length);
+    print('https://ibtikarsoft.net/finder/api/admin/ranking.php?lang=ar&token=aruv8kzsmyo7&type=$time');
     print(dataRanking);
     return dataRanking;
   }
@@ -679,6 +680,16 @@ class Funcprovider with ChangeNotifier {
     return infLogin;
   }
 
-
+   card() async {
+    var D = await get(Uri.parse(
+        'https://ibtikarsoft.net/finder/api/admin/home_cards.php?lang=$lang&token=$token'));
+    if (D.statusCode == 200) {
+      var x = json.decode(D.body);
+      dataCard = x;
+    }
+    print('-------------------');
+    print(dataCard);
+    return dataCard;
+  }
 
 }

@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import '../../provider/provider.dart';
 import '../widgets/display_image_widget.dart';
 import 'date_of_B.dart';
-import 'edit_description.dart';
+import 'edit_address.dart';
 import 'edit_email.dart';
 import 'edit_image.dart';
 import 'edit_name.dart';

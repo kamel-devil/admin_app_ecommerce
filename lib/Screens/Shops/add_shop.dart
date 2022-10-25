@@ -178,7 +178,6 @@ class _AddShopState extends State<AddShop> with TickerProviderStateMixin{
               child: Column(
                 children: <Widget>[
                   _getImageWidget(),
-                  const SizedBox(height: 30),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -251,6 +250,7 @@ class _AddShopState extends State<AddShop> with TickerProviderStateMixin{
                   //     }
                   //   },
                   // ),
+                  SizedBox(height: 10,),
                   Row(
                     children: [
                       Expanded(
@@ -286,6 +286,8 @@ class _AddShopState extends State<AddShop> with TickerProviderStateMixin{
                       const Padding(padding: EdgeInsets.all(4)),
                     ],
                   ),
+                  SizedBox(height: 10,),
+
                   Row(
                     children: [
                       Expanded(
@@ -321,6 +323,7 @@ class _AddShopState extends State<AddShop> with TickerProviderStateMixin{
                       const Padding(padding: EdgeInsets.all(4)),
                     ],
                   ),
+                  SizedBox(height: 10,),
                   Row(
                     children: [
                       Expanded(
@@ -336,6 +339,7 @@ class _AddShopState extends State<AddShop> with TickerProviderStateMixin{
                           compareFn: (i, s) => i.isEqual(s),
                           popupProps: PopupPropsMultiSelection.modalBottomSheet(
                             showSearchBox: true,
+                            isFilterOnline: true,
                             itemBuilder: _customPopupItemBuilderExample3,
                             favoriteItemProps: FavoriteItemProps(
                               showFavoriteItems: true,
@@ -1155,8 +1159,8 @@ class _AddShopState extends State<AddShop> with TickerProviderStateMixin{
               fit: BoxFit.fill,
             );
     } else {
-      return Image.network(
-        'https://cdn.vectorstock.com/i/1000x1000/02/30/photo-icon-vector-21180230.webp',
+      return Image.asset(
+        'assets/images/img.png',
         width: (kIsWeb) ? 250 : MediaQuery.of(context).size.width - 16,
         fit: BoxFit.fill,
       );
