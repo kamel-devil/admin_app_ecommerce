@@ -381,9 +381,9 @@ class _AddOwnerState extends State<AddOwner> {
         fit: BoxFit.fill,
       );
     } else {
-      return Image.network(
-        'https://cdn.vectorstock.com/i/1000x1000/02/30/photo-icon-vector-21180230.webp',
-        width: (kIsWeb) ? 250 : MediaQuery.of(context).size.width-16,
+      return Image.asset(
+        'assets/images/img.png',
+        width: (kIsWeb) ? 250 : MediaQuery.of(context).size.width - 16,
         fit: BoxFit.fill,
       );
     }

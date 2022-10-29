@@ -13,11 +13,13 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../Screens/home_admin.dart';
 import '../model/UserModel.dart';
 import '../model/UserModel2.dart';
 import '../model/UserModel3.dart';
 
 class Funcprovider with ChangeNotifier {
+   int? isMe;
   // List<Marker> mark = [];
   List loc = [];
   List cate = [];
@@ -43,7 +45,7 @@ class Funcprovider with ChangeNotifier {
   double? long;
   bool result = false;
   final RefreshController refreshController =
-  RefreshController(initialRefresh: true);
+      RefreshController(initialRefresh: true);
   int currentPage = 1;
 
   // File? file;
@@ -57,6 +59,33 @@ class Funcprovider with ChangeNotifier {
   bool isLogin = false;
   String? subId;
   Locale lang = Locale('ar');
+   final List<Sales> smartphoneData = [
+
+   ];
+
+   final List<Sales> refrigeratorData = [
+     Sales("2014", 30),
+
+   ];
+   List series=[];
+
+   Future getFavServices( ) async {
+     String url =
+         'https://ibtikarsoft.net/finder/api/admin/reports.php?lang=ar&token=aruv8kzsmyo7';
+     final res = await get(Uri.parse(url));
+     if (res.statusCode == 200) {
+       List data = json.decode(res.body);
+       series = data;
+       series.forEach((element) {
+         element['data'].forEach((el){
+           smartphoneData.add(Sales(el['name'], el['count']));
+         });
+       });
+     } else {
+       print("Error");
+     }
+     return smartphoneData;
+   }
 
   Future getDatacate(String id) async {
     String url =
@@ -208,9 +237,9 @@ class Funcprovider with ChangeNotifier {
     var response = await request.send();
     var responsseData = await response.stream.toBytes();
     var result = String.fromCharCodes(responsseData);
-    shop=json.decode(result);
+    shop = json.decode(result);
     print(result);
-    print('shop_id:'+shop['shop_id']);
+    print('shop_id:' + shop['shop_id']);
     notifyListeners();
     // print(res.headers);
   }
@@ -306,7 +335,7 @@ class Funcprovider with ChangeNotifier {
     );
     if (response.statusCode == 200) {
       final data = json.decode(response.data);
-      dropOwner=data;
+      dropOwner = data;
       print(data);
       if (data != null) {
         return UserModel.fromJsonList(data);
@@ -315,6 +344,7 @@ class Funcprovider with ChangeNotifier {
     }
     return [];
   }
+
   Future<List<UserModel2>> modules(filter) async {
     var response = await dio.Dio().get(
       "https://ibtikarsoft.net/finder/api/admin/modules.php?lang=$lang&token=$token",
@@ -322,7 +352,7 @@ class Funcprovider with ChangeNotifier {
     );
     if (response.statusCode == 200) {
       final data = json.decode(response.data);
-      dropOwner=data;
+      dropOwner = data;
       print(data);
       if (data != null) {
         return UserModel2.fromJsonList(data);
@@ -331,14 +361,15 @@ class Funcprovider with ChangeNotifier {
     }
     return [];
   }
-  Future<List<UserModel3>> productCategories(filter,String id) async {
+
+  Future<List<UserModel3>> productCategories(filter, String id) async {
     var response = await dio.Dio().get(
       "https://ibtikarsoft.net/finder/api/admin/pcategories.php?lang=$lang&token=$token&module=$id",
       queryParameters: {"filter": filter},
     );
     if (response.statusCode == 200) {
       final data = json.decode(response.data);
-      dropOwner=data;
+      dropOwner = data;
       print(data);
       if (data != null) {
         return UserModel3.fromJsonList(data);
@@ -347,6 +378,7 @@ class Funcprovider with ChangeNotifier {
     }
     return [];
   }
+
   Future ranking(String time) async {
     var D = await get(Uri.parse(
         'https://ibtikarsoft.net/finder/api/admin/ranking.php?lang=ar&token=aruv8kzsmyo7&type=$time'));
@@ -354,7 +386,8 @@ class Funcprovider with ChangeNotifier {
       var x = json.decode(D.body);
       dataRanking = x;
     }
-    print('https://ibtikarsoft.net/finder/api/admin/ranking.php?lang=ar&token=aruv8kzsmyo7&type=$time');
+    print(
+        'https://ibtikarsoft.net/finder/api/admin/ranking.php?lang=ar&token=aruv8kzsmyo7&type=$time');
     print(dataRanking);
     return dataRanking;
   }
@@ -379,7 +412,10 @@ class Funcprovider with ChangeNotifier {
     return ownerEdit;
   }
 
-   void getAddressInfo(double latAddress, double longAddress,) async {
+  void getAddressInfo(
+    double latAddress,
+    double longAddress,
+  ) async {
     String url =
         'https://ibtikarsoft.net/finder/api/admin/address_info.php?lat=$latAddress&long=$longAddress';
     print(url);
@@ -400,9 +436,10 @@ class Funcprovider with ChangeNotifier {
     } else {
       print("Error");
     }
-   }
+  }
 
-  Future<bool> getPassengerData(String search,String id,{bool isRefresh = false}) async {
+  Future<bool> getPassengerData(String search, String id,
+      {bool isRefresh = false}) async {
     if (isRefresh) {
       currentPage = 1;
     } else {
@@ -416,7 +453,6 @@ class Funcprovider with ChangeNotifier {
       }
     }
 
-
     final Uri uri = Uri.parse(
         "https://ibtikarsoft.net/finder/api/admin/shops.php?token=$token&lang=$lang&lat=$lat&long=$long&cat=$id&page=$currentPage&search=$search");
 
@@ -427,14 +463,13 @@ class Funcprovider with ChangeNotifier {
 
       if (isRefresh) {
         passengers = result;
-      }else{
+      } else {
         passengers.addAll(result);
       }
 
       currentPage++;
 
       // totalPages = result[4];
-      notifyListeners();
       print(response.body);
       print(Uri);
       return true;
@@ -463,9 +498,9 @@ class Funcprovider with ChangeNotifier {
     return servicesSh;
   }
 
-  datapopshops(String id) async {
+  datapopshops(String id,String search) async {
     var D = await get(Uri.parse(
-        'https://ibtikarsoft.net/finder/api/admin/shops.php?token=$token&lang=$lang&lat=$lat&long=$long&cat=$id&pop=1'));
+        'https://ibtikarsoft.net/finder/api/admin/shops.php?token=$token&lang=$lang&lat=$lat&long=$long&cat=$id&pop=1&search=$search'));
     if (D.statusCode == 200) {
       var x = json.decode(D.body);
       popshopsda = x;
@@ -586,8 +621,7 @@ class Funcprovider with ChangeNotifier {
     return dataProfile;
   }
 
-  Future updateProfileWithImage(
-  String file) async {
+  Future updateProfileWithImage(String file) async {
     var request = MultipartRequest(
         'POST',
         Uri.parse(
@@ -610,18 +644,22 @@ class Funcprovider with ChangeNotifier {
     notifyListeners();
     // print(res.headers);
   }
+
   Future updateProfileName(String fName, lName) async {
     var response = await post(
-        Uri.parse('https://ibtikarsoft.net/finder/api/admin/profile.php?lang=ar&token=$token&action=update'),
+        Uri.parse(
+            'https://ibtikarsoft.net/finder/api/admin/profile.php?lang=ar&token=$token&action=update'),
         body: {"f_name": fName, "l_name": lName});
     Map x = json.decode(response.body);
     infLogin = x;
 
     return infLogin;
   }
+
   Future updateProfilePhone(String phone) async {
     var response = await post(
-        Uri.parse('https://ibtikarsoft.net/finder/api/admin/profile.php?lang=ar&token=$token&action=update'),
+        Uri.parse(
+            'https://ibtikarsoft.net/finder/api/admin/profile.php?lang=ar&token=$token&action=update'),
         body: {"phone": phone});
     Map x = json.decode(response.body);
     infLogin = x;
@@ -629,9 +667,11 @@ class Funcprovider with ChangeNotifier {
     print(infLogin);
     return infLogin;
   }
+
   Future updateProfileEmail(String email) async {
     var response = await post(
-        Uri.parse('https://ibtikarsoft.net/finder/api/admin/profile.php?lang=ar&token=$token&action=update'),
+        Uri.parse(
+            'https://ibtikarsoft.net/finder/api/admin/profile.php?lang=ar&token=$token&action=update'),
         body: {"email": email});
     Map x = json.decode(response.body);
     infLogin = x;
@@ -639,9 +679,11 @@ class Funcprovider with ChangeNotifier {
     print(infLogin);
     return infLogin;
   }
+
   Future updateProfileAddress(String address) async {
     var response = await post(
-        Uri.parse('https://ibtikarsoft.net/finder/api/admin/profile.php?lang=ar&token=$token&action=update'),
+        Uri.parse(
+            'https://ibtikarsoft.net/finder/api/admin/profile.php?lang=ar&token=$token&action=update'),
         body: {"address": address});
     Map x = json.decode(response.body);
     infLogin = x;
@@ -649,9 +691,11 @@ class Funcprovider with ChangeNotifier {
     print(infLogin);
     return infLogin;
   }
+
   Future updateProfileUsername(String username) async {
     var response = await post(
-        Uri.parse('https://ibtikarsoft.net/finder/api/admin/profile.php?lang=ar&token=$token&action=update'),
+        Uri.parse(
+            'https://ibtikarsoft.net/finder/api/admin/profile.php?lang=ar&token=$token&action=update'),
         body: {"username": username});
     Map x = json.decode(response.body);
     infLogin = x;
@@ -659,9 +703,11 @@ class Funcprovider with ChangeNotifier {
     print(infLogin);
     return infLogin;
   }
+
   Future updateProfileBirth(String dob) async {
     var response = await post(
-        Uri.parse('https://ibtikarsoft.net/finder/api/admin/profile.php?lang=ar&token=$token&action=update'),
+        Uri.parse(
+            'https://ibtikarsoft.net/finder/api/admin/profile.php?lang=ar&token=$token&action=update'),
         body: {"dob": dob});
     Map x = json.decode(response.body);
     infLogin = x;
@@ -669,10 +715,12 @@ class Funcprovider with ChangeNotifier {
     print(infLogin);
     return infLogin;
   }
-  Future updateProfilePassword(String old_pass,String new_pass) async {
+
+  Future updateProfilePassword(String old_pass, String new_pass) async {
     var response = await post(
-        Uri.parse('https://ibtikarsoft.net/finder/api/admin/profile.php?lang=ar&token=$token&action=password'),
-        body: {"old_pass": old_pass,'new_pass':new_pass});
+        Uri.parse(
+            'https://ibtikarsoft.net/finder/api/admin/profile.php?lang=ar&token=$token&action=password'),
+        body: {"old_pass": old_pass, 'new_pass': new_pass});
     Map x = json.decode(response.body);
     infLogin = x;
     print('--------------------');
@@ -680,7 +728,7 @@ class Funcprovider with ChangeNotifier {
     return infLogin;
   }
 
-   card() async {
+  card() async {
     var D = await get(Uri.parse(
         'https://ibtikarsoft.net/finder/api/admin/home_cards.php?lang=$lang&token=$token'));
     if (D.statusCode == 200) {
@@ -691,5 +739,4 @@ class Funcprovider with ChangeNotifier {
     print(dataCard);
     return dataCard;
   }
-
 }

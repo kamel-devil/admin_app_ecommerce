@@ -14,8 +14,14 @@ class LeaderBoardScreen extends StatefulWidget {
 }
 
 class _LeaderBoardScreenState extends State<LeaderBoardScreen> {
-  final ItemScrollController _scrollController = ItemScrollController();
+  late ItemScrollController _scrollController;
   String time = 'day';
+  int scrolleInto=0;
+  @override
+  void initState() {
+    _scrollController = ItemScrollController();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -414,91 +420,105 @@ class _LeaderBoardScreenState extends State<LeaderBoardScreen> {
                       future: p.ranking(time),
                       builder: (context, snapshot) {
                         if (snapshot.hasData && p.dataRanking.isNotEmpty) {
-                          return Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 15.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                WinnerContainer(
-                                  color: p.dataRanking[1]['is_me'] == true
-                                      ? Colors.amber
-                                      : const Color(0xFF2B3245),
-                                  winnerPosition:
-                                      p.dataRanking[1]['rank'].toString(),
-                                  height: 120.0,
-                                  winnerName: p.dataRanking[1]['name'],
-                                  image: p.dataRanking[1]['image'],
-                                  countRank:
-                                      p.dataRanking[1]['points'].toString(),
+                          for (int i = 0; i < p.dataRanking.length; i++) {
+                            if (p.dataRanking[i]['is_me']) {
+
+                               scrolleInto=i;
+
+                            }
+                          }
+                          return Column(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 15.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    WinnerContainer(
+                                      color: p.dataRanking[1]['is_me'] == true
+                                          ? Colors.amber
+                                          : const Color(0xFF2B3245),
+                                      winnerPosition:
+                                          p.dataRanking[1]['rank'].toString(),
+                                      height: 120.0,
+                                      winnerName: p.dataRanking[1]['name'],
+                                      image: p.dataRanking[1]['image'],
+                                      countRank:
+                                          p.dataRanking[1]['points'].toString(),
+                                    ),
+                                    WinnerContainer(
+                                      isFirst: true,
+                                      color: p.dataRanking[0]['is_me'] == true
+                                          ? Colors.amber
+                                          : const Color(0xFF2B3245),
+                                      winnerPosition:
+                                          p.dataRanking[0]['rank'].toString(),
+                                      height: 140.0,
+                                      winnerName: p.dataRanking[0]['name'],
+                                      image: p.dataRanking[0]['image'],
+                                      countRank:
+                                          p.dataRanking[0]['points'].toString(),
+                                    ),
+                                    WinnerContainer(
+                                      color: p.dataRanking[2]['is_me'] == true
+                                          ? Colors.amber
+                                          : const Color(0xFF2B3245),
+                                      winnerPosition:
+                                          p.dataRanking[2]['rank'].toString(),
+                                      height: 100.0,
+                                      winnerName: p.dataRanking[2]['name'],
+                                      image: p.dataRanking[2]['image'],
+                                      countRank:
+                                          p.dataRanking[2]['points'].toString(),
+                                    ),
+                                  ],
                                 ),
-                                WinnerContainer(
-                                  isFirst: true,
-                                  color: p.dataRanking[0]['is_me'] == true
-                                      ? Colors.amber
-                                      : const Color(0xFF2B3245),
-                                  winnerPosition:
-                                      p.dataRanking[0]['rank'].toString(),
-                                  height: 140.0,
-                                  winnerName: p.dataRanking[0]['name'],
-                                  image: p.dataRanking[0]['image'],
-                                  countRank:
-                                      p.dataRanking[0]['points'].toString(),
+                              ),
+                              const SizedBox(height: 20.0),
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(20.0),
+                                      topRight: Radius.circular(20.0)),
+                                  gradient: LinearGradient(colors: [
+                                    Colors.yellow.shade600,
+                                    Colors.orange,
+                                    Colors.red
+                                  ]),
                                 ),
-                                WinnerContainer(
-                                  color: p.dataRanking[2]['is_me'] == true
-                                      ? Colors.amber
-                                      : const Color(0xFF2B3245),
-                                  winnerPosition:
-                                      p.dataRanking[2]['rank'].toString(),
-                                  height: 100.0,
-                                  winnerName: p.dataRanking[2]['name'],
-                                  image: p.dataRanking[2]['image'],
-                                  countRank:
-                                      p.dataRanking[2]['points'].toString(),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(2.0),
+                                  child: Container(
+                                    height: 400,
+                                    decoration: const BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(20.0),
+                                          topRight: Radius.circular(20.0)),
+                                      color: Color(0xFF212232),
+                                    ),
+                                    child: ScrollablePositionedList.builder(
+                                       itemScrollController: _scrollController,
+                                      itemCount: p.dataRanking.length,
+                                      itemBuilder: (BuildContext context, int index) {
+                                        if( p.dataRanking[index]['is_me'] == true){
+                                          scrolleInto=index;
+                                        }
+                                        return itemRang(index);
+                                      },
+                                      initialScrollIndex: scrolleInto,
+                                    ),
+                                  ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           );
                         } else {
                           return const CircularProgressIndicator();
                         }
                       }),
-                  const SizedBox(height: 20.0),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(20.0),
-                          topRight: Radius.circular(20.0)),
-                      gradient: LinearGradient(colors: [
-                        Colors.yellow.shade600,
-                        Colors.orange,
-                        Colors.red
-                      ]),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(2.0),
-                      child: Container(
-                        height: 400,
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20.0),
-                              topRight: Radius.circular(20.0)),
-                          color: Color(0xFF212232),
-                        ),
-                        child: ScrollablePositionedList.builder(
-                          itemScrollController: _scrollController,
-                          itemCount: p.dataRanking.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            _scrollController.scrollTo(
-                                index: 7, duration: const Duration(seconds: 1));
-                            return itemRang(index);
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
+
                 ],
               ),
             ),
@@ -510,7 +530,6 @@ class _LeaderBoardScreenState extends State<LeaderBoardScreen> {
 
   Widget itemRang(index) {
     var p = Provider.of<Funcprovider>(context);
-
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Container(
@@ -518,7 +537,7 @@ class _LeaderBoardScreenState extends State<LeaderBoardScreen> {
             borderRadius: BorderRadius.circular(20.0),
             color: p.dataRanking[index]['is_me'] == true
                 ? Colors.amber
-                : const Color(0xFF2B3245)),
+            : const Color(0xFF2B3245)),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
           child: Row(

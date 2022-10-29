@@ -51,8 +51,12 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
+        themeMode: ThemeMode.system,
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primaryColor: Colors.blue,
+        ),
+        darkTheme: ThemeData(
+          primaryColor: Colors.amber
         ),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,

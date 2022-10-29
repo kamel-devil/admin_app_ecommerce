@@ -79,6 +79,11 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
             screenView = const Map1();
           });
           break;
+        case DrawerIndex.Report:
+          setState(() {
+            screenView =  homeAdmin();
+          });
+          break;
 
         default:
           break;

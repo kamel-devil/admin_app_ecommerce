@@ -12,7 +12,6 @@ import '../../presentation/constant.dart';
 import '../../provider/provider.dart';
 import '../../res/cache_image_network.dart';
 import '../../res/color_data.dart';
-import '../../res/global_widget.dart';
 import '../../res/shimmer_loading.dart';
 import '../Shops/edit_shop.dart';
 import '../Shops/shop.dart';

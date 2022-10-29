@@ -1,8 +1,11 @@
+import 'package:e_commerce/map/tools/map.dart';
 import 'package:e_commerce/register/signin2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import '../Screens/Owner/owners.dart';
+import '../Screens/Shops/shops.dart';
 import '../classes/language.dart';
 import '../classes/language_constants.dart';
 import '../custom_drawer/navigation_home_screen.dart';
@@ -156,16 +159,14 @@ class _User1PageState extends State<User1Page> {
                       ),
                     );
                   } else {
-                    return CircularProgressIndicator();
+                    return const CircularProgressIndicator();
                   }
                 }),
-            _createListMenu('Change Password'),
+            _createListMenu('Set Address',const Map1()),
             Divider(height: 0, color: Colors.grey[400]),
-            _createListMenu('Set Address'),
+            _createListMenu('Owners',const Owners()),
             Divider(height: 0, color: Colors.grey[400]),
-            _createListMenu('Owners'),
-            Divider(height: 0, color: Colors.grey[400]),
-            _createListMenu('Shops'),
+            _createListMenu('Shops',const Shops()),
             Divider(height: 0, color: Colors.grey[400]),
             DropdownButton<Language>(
               iconSize: 30,
@@ -221,12 +222,11 @@ class _User1PageState extends State<User1Page> {
         ));
   }
 
-  Widget _createListMenu(String menuTitle) {
+  Widget _createListMenu(String menuTitle,Widget page) {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () {
-        Fluttertoast.showToast(
-            msg: 'Click $menuTitle', toastLength: Toast.LENGTH_SHORT);
+   Navigator.of(context).push(MaterialPageRoute(builder: (context)=>page));
       },
       child: Container(
         margin: const EdgeInsets.fromLTRB(0, 18, 0, 18),

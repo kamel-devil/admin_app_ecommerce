@@ -66,11 +66,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
       //   labelName: 'Arabic',
       //   icon: const Icon(Icons.language),
       // ),
-      // DrawerList(
-      //   index: DrawerIndex.Help,
-      //   labelName: 'Englis',
-      //   icon: const Icon(Icons.language),
-      // ),
+      DrawerList(
+        index: DrawerIndex.Report,
+        labelName: 'Report',
+        icon: const Icon(Icons.report),
+      ),
       DrawerList(
         index: DrawerIndex.Help,
         labelName: 'Help',
@@ -393,6 +393,7 @@ enum DrawerIndex {
   AddOwner,
   FeedBack,
   Help,
+  Report,
   Share,
   About,
   Invite,

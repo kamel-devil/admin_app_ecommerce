@@ -36,6 +36,7 @@ class _ShopsState extends State<Shops> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   int selectedCategoryIndex = 0;
   String idCate = '0';
+
   void _getData() {
     // this timer function is just for demo, so after 2 second, the shimmer loading will disappear and show the content
     _timerDummy = Timer(const Duration(seconds: 2), () {
@@ -85,9 +86,9 @@ class _ShopsState extends State<Shops> {
             decoration: BoxDecoration(
               border: Border(
                   bottom: BorderSide(
-                    color: Colors.grey[100]!,
-                    width: 1.0,
-                  )),
+                color: Colors.grey[100]!,
+                width: 1.0,
+              )),
             ),
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             height: kToolbarHeight,
@@ -115,14 +116,14 @@ class _ShopsState extends State<Shops> {
                 suffixIcon: (search == '')
                     ? null
                     : GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _shopSearch = TextEditingController(text: '');
+                        onTap: () {
+                          setState(() {
+                            _shopSearch = TextEditingController(text: '');
 
-                        search = '';
-                      });
-                    },
-                    child: Icon(Icons.close, color: Colors.grey[500])),
+                            search = '';
+                          });
+                        },
+                        child: Icon(Icons.close, color: Colors.grey[500])),
                 focusedBorder: UnderlineInputBorder(
                     borderRadius: const BorderRadius.all(Radius.circular(5.0)),
                     borderSide: BorderSide(color: Colors.grey[200]!)),
@@ -151,116 +152,15 @@ class _ShopsState extends State<Shops> {
               }),
         ],
       ),
-      body: Column(children: [
-        Consumer<Funcprovider>(
-          builder: (BuildContext context, value, Widget? child) {
-            return FutureBuilder(
-                future: value.getDatacate(idCate),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData &&
-                      value.cate.isNotEmpty) {
-                    final list = snapshot.data as List;
-                    return Row(
-                      children: [
-                        IconButton(onPressed: (){
-                          setState(() {
-                            idCate='0';
-                          });
-                        }, icon:const Icon(Icons.arrow_back_ios_sharp)),
-                        Expanded(
-                          child: SingleChildScrollView(
-                            padding:
-                            const EdgeInsets.fromLTRB(15, 5, 7, 10),
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: List.generate(
-                                list.length,
-                                    (index) => Padding(
-                                  padding:
-                                  const EdgeInsets.only(right: 8),
-                                  child: CategoryItem(
-                                    data: list[index],
-                                    isSelected:
-                                    index == selectedCategoryIndex,
-                                    onTap: () {
-                                      // value.getData(list[index]['id']);
-                                      setState(() {
-                                        selectedCategoryIndex = index;
-                                        idCate = list[index]['id'];
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                });
-          },
-        ),
-
-        Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Popular Shops',
-                      style: TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold)),
-                  GestureDetector(
-                    onTap: () {
-                      Fluttertoast.showToast(
-                          msg: 'Click last search',
-                          toastLength: Toast.LENGTH_SHORT);
-                    },
-                    child: const Text('view all',
-                        style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: PRIMARY_COLOR),
-                        textAlign: TextAlign.end),
-                  )
-                ],
-              ),
-            ),
-            FutureBuilder(
-                future: p.datapopshops(idCate),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData && p.popshopsda.isNotEmpty) {
-                    return Container(
-                        margin: const EdgeInsets.only(top: 16),
-                        height: boxImageSize1 * 1.90,
-                        child: ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          scrollDirection: Axis.horizontal,
-                          itemCount: p.popshopsda.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return _buildLastSearchCard(index, boxImageSize1);
-                          },
-                        ));
-                  } else {
-                    return const CircularProgressIndicator();
-                  }
-                }),
-          ],
-        ),
-        Expanded(
-          child: SmartRefresher(
+      body: FutureBuilder(
+        future: p.getPassengerData(isRefresh: true,search, idCate),
+        builder: (context, snapshot) {
+          return SmartRefresher(
             controller: p.refreshController,
             enablePullUp: true,
             onRefresh: () async {
-
-              final result = await p.getPassengerData(
-                  isRefresh: true,search, idCate);
+              final result =
+                  await p.getPassengerData(isRefresh: true, search, idCate);
               if (result) {
                 p.refreshController.refreshCompleted();
               } else {
@@ -275,21 +175,127 @@ class _ShopsState extends State<Shops> {
                 p.refreshController.loadFailed();
               }
             },
-            child: ListView.separated(
-              shrinkWrap: true,
-              // key: _listKey,
-              // physics: AlwaysScrollableScrollPhysics (),
-              itemBuilder: (context, index) {
-                return _buildItem(boxImageSize, index);
-              },
-              itemCount: p.passengers.length,
-
-              separatorBuilder: (BuildContext context, int index) =>
-              const Divider(),
+            child: Column(
+              children: [
+                Consumer<Funcprovider>(
+                  builder: (BuildContext context, value, Widget? child) {
+                    return FutureBuilder(
+                        future: value.getDatacate(idCate),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData && value.cate.isNotEmpty) {
+                            final list = snapshot.data as List;
+                            return Row(
+                              children: [
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        idCate = '0';
+                                      });
+                                    },
+                                    icon: const Icon(Icons.arrow_back_ios_sharp)),
+                                Expanded(
+                                  child: SingleChildScrollView(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(15, 5, 7, 10),
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: List.generate(
+                                        list.length,
+                                        (index) => Padding(
+                                          padding: const EdgeInsets.only(right: 8),
+                                          child: CategoryItem(
+                                            data: list[index],
+                                            isSelected:
+                                                index == selectedCategoryIndex,
+                                            onTap: () {
+                                              // value.getData(list[index]['id']);
+                                              setState(() {
+                                                selectedCategoryIndex = index;
+                                                idCate = list[index]['id'];
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          } else {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        });
+                  },
+                ),
+                Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Popular Shops',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                          GestureDetector(
+                            onTap: () {
+                              Fluttertoast.showToast(
+                                  msg: 'Click last search',
+                                  toastLength: Toast.LENGTH_SHORT);
+                            },
+                            child: const Text('view all',
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    color: PRIMARY_COLOR),
+                                textAlign: TextAlign.end),
+                          )
+                        ],
+                      ),
+                    ),
+                    FutureBuilder(
+                        future: p.datapopshops(idCate,search),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData && p.popshopsda.isNotEmpty) {
+                            return Container(
+                                margin: const EdgeInsets.only(top: 16),
+                                height: boxImageSize1 * 1.90,
+                                child: ListView.builder(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 12),
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: p.popshopsda.length,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return _buildLastSearchCard(
+                                        index, boxImageSize1);
+                                  },
+                                ));
+                          } else {
+                            return const CircularProgressIndicator();
+                          }
+                        }),
+                  ],
+                ),
+                Expanded(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    primary: false,
+                    itemBuilder: (context, index) {
+                      return _buildItem(boxImageSize, index);
+                    },
+                    itemCount: p.passengers.length,
+                    separatorBuilder: (BuildContext context, int index) =>
+                        const Divider(),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ),
-      ]),
+          );
+        }
+      ),
     );
   }
 
@@ -309,8 +315,8 @@ class _ShopsState extends State<Shops> {
           onTap: () {
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => shop(
-                  id: p.popshopsda[index]['id'],
-                )));
+                      id: p.popshopsda[index]['id'],
+                    )));
           },
           child: Column(
             children: <Widget>[
@@ -430,10 +436,10 @@ class _ShopsState extends State<Shops> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                               Icon(
-                                IconDataSolid(
-                                    int.parse(p.passengers[index]['icon_name'])),
-                                color:
-                                    HexColor.fromHex(p.passengers[index]['color']),
+                                IconDataSolid(int.parse(
+                                    p.passengers[index]['icon_name'])),
+                                color: HexColor.fromHex(
+                                    p.passengers[index]['color']),
                                 size: 15,
                               ),
                             ],
@@ -445,7 +451,8 @@ class _ShopsState extends State<Shops> {
                                 const Icon(Icons.location_on,
                                     color: SOFT_GREY, size: 12),
                                 Flexible(
-                                  child: Text(' ${p.passengers[index]['address']}',
+                                  child: Text(
+                                      ' ${p.passengers[index]['address']}',
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
                                           fontSize: 11, color: SOFT_GREY)),
@@ -455,7 +462,8 @@ class _ShopsState extends State<Shops> {
                           ),
                           Container(
                             margin: const EdgeInsets.only(top: 5),
-                            child: Text('Phone: ${p.passengers[index]['phone']}',
+                            child: Text(
+                                'Phone: ${p.passengers[index]['phone']}',
                                 style: const TextStyle(
                                     fontSize: 11, color: SOFT_GREY)),
                           ),
@@ -486,8 +494,8 @@ class _ShopsState extends State<Shops> {
                           GestureDetector(
                             behavior: HitTestBehavior.translucent,
                             onTap: () {
-                              showPopupDeleteFavorite(
-                                  index, boxImageSize, p.passengers[index]['id']);
+                              showPopupDeleteFavorite(index, boxImageSize,
+                                  p.passengers[index]['id']);
                             },
                             child: Container(
                               padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
@@ -508,9 +516,8 @@ class _ShopsState extends State<Shops> {
                                 onPressed: () {
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (context) => EditShop(
-                                        id:  p.passengers[index]['id'],
-
-                                      )));
+                                            id: p.passengers[index]['id'],
+                                          )));
                                 },
                                 style: ButtonStyle(
                                     minimumSize: MaterialStateProperty.all(
